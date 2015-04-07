@@ -21,6 +21,7 @@ import javax.swing.JTextArea;
 import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 
 public class GUI extends JFrame {
@@ -28,6 +29,8 @@ public class GUI extends JFrame {
 	private JPanel contentPane;
 
 	public control ctrl;
+	private JTable table;
+	private JTable table_1;
 	
 	
 
@@ -48,15 +51,37 @@ public class GUI extends JFrame {
 			public void actionPerformed(ActionEvent arg0) 
 			{
 				
-				ctrl.readFile();
+				ctrl.readFile();		// Datei einlesen
+				
 			}
 		});
 		btnNewButton.setBounds(10, 11, 89, 23);
 		contentPane.add(btnNewButton);
 		
+		/**
+		 *  |						   |
+		 *  | TEST für Programmausgabe |
+		 *  v 						   v
+		 */
+		
+		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 45, 250, 350);
+		scrollPane.setBounds(23, 68, 251, 302);
 		contentPane.add(scrollPane);
+		
+
+		String[] columnNames = {"BP","Program"};
+		
+		Object[][] data = {
+				{"", "Line1"},
+				{"", "Line2"}
+		};
+		
+		
+		table_1 = new JTable(data, columnNames);
+		scrollPane.setViewportView(table_1);
+		table_1.setBounds(0, 0, 100, 100);
+		
 		
 		
 	}

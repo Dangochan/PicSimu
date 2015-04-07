@@ -13,9 +13,10 @@ public class control
 	/**
 	 * Variables
 	 */
-	private ArrayList<String> array = new ArrayList<String>();
-	
-	private int progStorage[];
+	//Liste um Befehle einzulesen
+	private ArrayList<String> arrayL = new ArrayList<String>();
+	//Dieses Array bildet den Programmspeicher des Pic ab.
+	private int[] progStorage;
 	
 	/**
 	 * Launch the application.
@@ -39,7 +40,7 @@ public class control
 					GUI frame = new GUI();
 					frame.setVisible(true);
 
-					frame.ctrl = ctrl;
+					frame.ctrl = ctrl; //GUI->controller Verbindung
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -57,7 +58,7 @@ public class control
 	
 	public void readFile()
 	{
-		int linecounter = 0;
+		int linecounter = 0; //Zählt Zeilen mit Programmcode
 		JFileChooser fc = new JFileChooser();
 		fc.showOpenDialog(null);
 		File file = fc.getSelectedFile();
@@ -69,17 +70,32 @@ public class control
 			while ((zeile = in.readLine()) != null) 
 			{
 				//System.out.println("Gelesene Zeile: " + zeile); zeile ausgeben
-				array.add(zeile); 
-				linecounter++;
+				arrayL.add(zeile); 
+				if(zeile.charAt(0) != ' ')//linecounter wird nur erhöht, wenn die Zeile Code enthält.
+					linecounter++;
 			}
 		} catch (IOException e) 
 		{
 			e.printStackTrace();
 		}
 		
+		progStorage = new int[linecounter];
 		
-		for(int i=0; i < array.size(); i++)
-			System.out.println( array.get( i ) ); 
+		int j = 0; //Zähler nur für Codezeilen
+		for(int i=0; i < arrayL.size(); i++)//Zähler für alle Zeilen
+		{
+			
+			String zeile = arrayL.get(i);
+			if(zeile.charAt(0) != ' ') //Codezeile?
+			{
+				String comand = zeile.substring(5, 9); //Programmcode extrahieren
+				progStorage[j] = Integer.parseInt(comand, 16); //Hexzahl in Int parsen & Programmspeicher füllen
+				System.out.println(progStorage[j]); //Test
+				j++;//Codezähler erhöhen
+			}
+			
+		}
+			 
 		
 	}
 
