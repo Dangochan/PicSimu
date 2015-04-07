@@ -17,6 +17,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import javax.swing.JTextArea;
+import javax.swing.JComboBox;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
 
 
 public class GUI extends JFrame {
@@ -32,7 +36,7 @@ public class GUI extends JFrame {
 	 */
 	public GUI() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 774, 537);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -49,6 +53,11 @@ public class GUI extends JFrame {
 		});
 		btnNewButton.setBounds(10, 11, 89, 23);
 		contentPane.add(btnNewButton);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(10, 45, 250, 350);
+		contentPane.add(scrollPane);
+		
+		
 	}
-
 }

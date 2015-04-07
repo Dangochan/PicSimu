@@ -13,7 +13,9 @@ public class control
 	/**
 	 * Variables
 	 */
-	ArrayList<String> array = new ArrayList<String>();
+	private ArrayList<String> array = new ArrayList<String>();
+	
+	private int progStorage[];
 	
 	/**
 	 * Launch the application.
