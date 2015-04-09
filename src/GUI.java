@@ -85,7 +85,6 @@ public class GUI extends JFrame {
 		table_1.setBounds(0, 0, 100, 100);
 		
 		
-		
 	}
 	
 	void showError(int fehler)

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 
 public class control 
 {
@@ -29,7 +28,7 @@ public class control
 		/**
 		 * Erzeugen des controllers
 		 */
-		 control ctrl = new control();
+		 final control ctrl = new control();
 		/**
 		 * Erzeugen des storage
 		 */
@@ -81,13 +80,14 @@ public class control
 				if(zeile.charAt(0) != ' ')//linecounter wird nur erhöht, wenn die Zeile Code enthält.
 					linecounter++;
 			}
+			in.close();
 		} catch (IOException e) 
 		{
 			e.printStackTrace();
 		}
 		
 		
-		if(linecounter <= (14 * 1024))
+		if(linecounter <= (14 * 1))
 		{
 			/**
 			 * Programmspeicher löschen
@@ -115,7 +115,7 @@ public class control
 		}
 		else
 		{
-			gui.showError(1);
+			gui.showError(1); //
 		}
 		
 	}
