@@ -24,6 +24,11 @@ import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 
 public class GUI extends JFrame {
@@ -31,10 +36,11 @@ public class GUI extends JFrame {
 	private JPanel contentPane;
 
 	public control ctrl;
-	private JTable table;
-	private JTable table_1;
-	
-	
+	public JTable table_1;
+	public JScrollPane scrollPane;
+
+	public String[] columnNames = {"BP","Program"};	
+	public Object[][] tempData = new Object[1][2];
 
 	/**
 	 * Create the frame.
@@ -67,20 +73,12 @@ public class GUI extends JFrame {
 		 */
 		
 		
-		JScrollPane scrollPane = new JScrollPane();
+		scrollPane = new JScrollPane();
 		scrollPane.setBounds(23, 68, 251, 302);
 		contentPane.add(scrollPane);
 		
-
-		String[] columnNames = {"BP","Program"};
 		
-		Object[][] data = {
-				{"", "Line1"},
-				{"", "Line2"}
-		};
-		
-		
-		table_1 = new JTable(data, columnNames);
+		table_1 = new JTable(tempData, columnNames);
 		scrollPane.setViewportView(table_1);
 		table_1.setBounds(0, 0, 100, 100);
 		

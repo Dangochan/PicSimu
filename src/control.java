@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -16,7 +18,7 @@ public class control
 	//Prüfvar ob ein Programm geladen ist
 	boolean isLoad = false;
 	//Liste um Befehle einzulesen
-	private ArrayList<String> arrayL = new ArrayList<String>();
+	public ArrayList<String> arrayL = new ArrayList<String>();
 	//Dieses Array bildet den Programmspeicher des Pic ab.
 	
 	public GUI gui;
@@ -29,7 +31,7 @@ public class control
 		/**
 		 * Erzeugen des controllers
 		 */
-		 control ctrl = new control();
+		 final control ctrl = new control();
 		/**
 		 * Erzeugen des storage
 		 */
@@ -85,7 +87,20 @@ public class control
 		{
 			e.printStackTrace();
 		}
+		/**
+		 * Programmtext in Tabelle schreiben
+		 */
+		Object[][] data = new Object[arrayL.size()][2];
 		
+		for (int i=0; i < arrayL.size(); i++)
+		{
+			data[i][1]= arrayL.get(i);
+		}
+		//neue Tabelle erstellen und damit die alte ersetzen
+		JTable table_2 = new JTable(data, gui.columnNames);
+		gui.scrollPane.setViewportView(table_2);
+		table_2.setBounds(0, 0, 100, 100);
+	
 		
 		if(linecounter <= (14 * 1024))
 		{
