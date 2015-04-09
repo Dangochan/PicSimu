@@ -6,18 +6,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
-
+import javax.swing.JOptionPane;
 
 public class control 
 {
 	/**
 	 * Variables
 	 */
+	//Prüfvar ob ein Programm geladen ist
+	boolean isLoad = false;
 	//Liste um Befehle einzulesen
 	private ArrayList<String> arrayL = new ArrayList<String>();
 	//Dieses Array bildet den Programmspeicher des Pic ab.
-	private int[] progStorage;
 	
+	public GUI gui;
+	public storage sto;
 	/**
 	 * Launch the application.
 	 */
@@ -26,8 +29,12 @@ public class control
 		/**
 		 * Erzeugen des controllers
 		 */
-		control ctrl = new control();
-		
+		 control ctrl = new control();
+		/**
+		 * Erzeugen des storage
+		 */
+		 storage createsto = new storage();
+		 ctrl.sto = createsto;
 		/**
 		 * Erstellen der GUI 
 		 */
@@ -39,7 +46,7 @@ public class control
 				{
 					GUI frame = new GUI();
 					frame.setVisible(true);
-
+					ctrl.gui = frame;
 					frame.ctrl = ctrl; //GUI->controller Verbindung
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -79,23 +86,37 @@ public class control
 			e.printStackTrace();
 		}
 		
-		progStorage = new int[linecounter];
 		
-		int j = 0; //Zähler nur für Codezeilen
-		for(int i=0; i < arrayL.size(); i++)//Zähler für alle Zeilen
+		if(linecounter <= (14 * 1024))
 		{
-			
-			String zeile = arrayL.get(i);
-			if(zeile.charAt(0) != ' ') //Codezeile?
+			/**
+			 * Programmspeicher löschen
+			 */
+			for(int i = 0; i < (14*1024); i++)
+				sto.progStorage[i]=0;
+			/**
+			 * Einlesen des Programms
+			 */
+			int j = 0; //Zähler nur für Codezeilen
+			for(int i=0; i < arrayL.size(); i++)//Zähler für alle Zeilen
 			{
-				String comand = zeile.substring(5, 9); //Programmcode extrahieren
-				progStorage[j] = Integer.parseInt(comand, 16); //Hexzahl in Int parsen & Programmspeicher füllen
-				System.out.println(progStorage[j]); //Test
-				j++;//Codezähler erhöhen
+				
+				String zeile = arrayL.get(i);
+				if(zeile.charAt(0) != ' ') //Codezeile?
+				{
+					String comand = zeile.substring(5, 9); //Programmcode extrahieren
+					sto.progStorage[j] = Integer.parseInt(comand, 16); //Hexzahl in Int parsen & Programmspeicher füllen
+					System.out.println(sto.progStorage[j]); //Test
+					j++;//Codezähler erhöhen
+				}
+				
 			}
-			
+			isLoad = true; //Angeben, dass ein Programm geladen wurde.
 		}
-			 
+		else
+		{
+			gui.showError(1);
+		}
 		
 	}
 
