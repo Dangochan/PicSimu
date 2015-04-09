@@ -17,6 +17,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JComboBox;
 import javax.swing.JList;
@@ -84,5 +86,23 @@ public class GUI extends JFrame {
 		
 		
 		
+	}
+	
+	void showError(int fehler)
+	{
+		/**
+		 * Fehlermeldungen:
+		 * 1: Eingelesener Programmcode ist gößer als Programmspeicher
+		 * 
+		 */
+		switch (fehler)
+		{
+			case 1: 
+				JOptionPane.showMessageDialog(null, "Programmcode zu lang", "Fehler", JOptionPane.OK_CANCEL_OPTION);
+				break;
+
+			default:
+				break;
+		}
 	}
 }
