@@ -102,12 +102,12 @@ public class control
 		table_2.setBounds(0, 0, 100, 100);
 	
 		
-		if(linecounter <= (14 * 1))
+		if(linecounter <= (1024))
 		{
 			/**
 			 * Programmspeicher löschen
 			 */
-			for(int i = 0; i < (14*1024); i++)
+			for(int i = 0; i < (1024); i++)
 				sto.progStorage[i]=0;
 			/**
 			 * Einlesen des Programms
