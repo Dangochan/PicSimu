@@ -22,6 +22,7 @@ public class control
 	
 	public GUI gui;
 	public storage sto;
+	public logic log;
 	/**
 	 * Launch the application.
 	 */
@@ -36,6 +37,12 @@ public class control
 		 */
 		 storage createsto = new storage();
 		 ctrl.sto = createsto;
+		/**
+		* Erzeugen der Pic Logik
+		*/
+		logic createlog = new logic();
+		ctrl.log = createlog;
+		ctrl.log.setStorage(ctrl.sto);
 		/**
 		 * Erstellen der GUI 
 		 */
@@ -121,12 +128,14 @@ public class control
 				{
 					String comand = zeile.substring(5, 9); //Programmcode extrahieren
 					sto.progStorage[j] = Integer.parseInt(comand, 16); //Hexzahl in Int parsen & Programmspeicher füllen
-					System.out.println(sto.progStorage[j]); //Test
+					//System.out.println(sto.progStorage[j]); //Test
 					j++;//Codezähler erhöhen
 				}
 				
 			}
 			isLoad = true; //Angeben, dass ein Programm geladen wurde.
+			
+			log.run();
 		}
 		else
 		{
@@ -134,6 +143,8 @@ public class control
 		}
 		
 	}
+
+	
 
 
 }
