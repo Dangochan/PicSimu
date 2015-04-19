@@ -21,7 +21,7 @@ public class control
 	//Dieses Array bildet den Programmspeicher des Pic ab.
 	
 	public GUI gui;
-	public storage sto;
+	public static storage sto;
 	public logic log;
 	/**
 	 * Launch the application.
@@ -56,6 +56,8 @@ public class control
 					frame.setVisible(true);
 					ctrl.gui = frame;
 					frame.ctrl = ctrl; //GUI->controller Verbindung
+					frame.sto = sto;
+					frame.initializeStorage();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -105,7 +107,7 @@ public class control
 		}
 		//neue Tabelle erstellen und damit die alte ersetzen
 		JTable table_2 = new JTable(data, gui.columnNames);
-		gui.scrollPane.setViewportView(table_2);
+		gui.scrollPane_source_code.setViewportView(table_2);
 		table_2.setBounds(0, 0, 100, 100);
 	
 		
