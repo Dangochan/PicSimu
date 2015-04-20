@@ -166,6 +166,15 @@ public class GUI extends JFrame {
 		model_special_register.fireTableDataChanged(); // notifies the JTable that the model has changed
 
 		model_special_register.addRow(new Object[]{"PC", Integer.toHexString(sto.getPC())});
+		model_special_register.addRow(new Object[]{"Stack0", Integer.toHexString(sto.stack[0])});
+		model_special_register.addRow(new Object[]{"Stack1", Integer.toHexString(sto.stack[1])});
+		model_special_register.addRow(new Object[]{"Stack2", Integer.toHexString(sto.stack[2])});
+		model_special_register.addRow(new Object[]{"Stack3", Integer.toHexString(sto.stack[3])});
+		model_special_register.addRow(new Object[]{"Stack4", Integer.toHexString(sto.stack[4])});
+		model_special_register.addRow(new Object[]{"Stack5", Integer.toHexString(sto.stack[5])});
+		model_special_register.addRow(new Object[]{"Stack6", Integer.toHexString(sto.stack[6])});
+		model_special_register.addRow(new Object[]{"Stack7", Integer.toHexString(sto.stack[7])});
+		
 	}	
 	
 	void showError(int fehler)

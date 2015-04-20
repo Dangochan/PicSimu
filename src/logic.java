@@ -22,7 +22,6 @@ public class logic
 		*/
 		executeCommand();
 
-		sto.setPC(sto.getPC()+1);
 		gui.updateStorage();
 		gui.updateSpecialRegister();
 	}
@@ -185,6 +184,7 @@ public class logic
 		switch ((sto.progStorage[sto.getPC()] & 0B11100000000000) >> 11)
 		{
 			case 0B100://Call subroutine
+				commandCall();
 				System.out.println("Call subroutine");
 				break;
 			case 0B101://Go to address
@@ -200,12 +200,14 @@ public class logic
 	/**
 	 * Befehlsfunktionen
 	 */
-	void commandGoTo()
-	{
-		sto.setPC(extractShortK());
-		sto.setPCLath(extractLongK() >> 8);
-			
-		sto.increasePC();
+	void commandGoTo() {	
+		sto.setPC(((sto.getPCL() & 0x18) << 8) | extractLongK());
+		
+	}
+	
+	void commandCall() {
+		sto.pushStack(sto.getPC() + 1);
+		sto.setPC(((sto.getPCL() & 0x18) << 8) | extractLongK());
 	}
 	
 	
@@ -214,30 +216,29 @@ public class logic
 	 */
 	int extractF()
 	{
-		return (sto.progStorage[sto.getPC()] & 0B1111111);
+		return (sto.progStorage[sto.getPC()] & 0x7F);
 	}
 	int extractD()
 	{
-		return ((sto.progStorage[sto.getPC()] & 0B10000000) >> 7);
+		return ((sto.progStorage[sto.getPC()] & 0x80) >> 7);
 	}
 	int extractB()
 	{
-		return ((sto.progStorage[sto.getPC()] & 0B1110000000) >> 7);
+		return ((sto.progStorage[sto.getPC()] & 0x380) >> 7);
 	}
 	int extractShortK()
 	{
 		
-		return ((sto.progStorage[sto.getPC()] & 0B11111111));
+		return ((sto.progStorage[sto.getPC()] & 0xFF));
 	}
 	int extractLongK()
 	{
-		return ((sto.progStorage[sto.getPC()] & 0B11111111111));
+		return ((sto.progStorage[sto.getPC()] & 0x7FF));
 	}
 
-
-
-	public void setStorage(storage s)
-	{
-		sto = s;
+	void increasePC() {
+		sto.writeStorage(0x02, sto.getPC()+1);
 	}
+
+	
 }
