@@ -38,15 +38,18 @@ public class GUI extends JFrame {
 
 	public control ctrl;
 	public storage sto;
+	public logic log;
 	public JTable table_source_code;
 	public JScrollPane scrollPane_source_code;
 	public JScrollPane scrollPane_storage;
 	
-	DefaultTableModel model = new DefaultTableModel(); 
+	DefaultTableModel model_storage = new DefaultTableModel(); 
+	DefaultTableModel model_special_register = new DefaultTableModel(); 
 	
 	public String[] columnNames = {"BP","Program"};	
 	public Object[][] tempData = new Object[1][2];
 	private JTable table_storage;
+	private JTable table_special_register;
 
 	/**
 	 * Create the frame.
@@ -80,6 +83,7 @@ public class GUI extends JFrame {
 		JButton btn_start = new JButton("Start");
 		btn_start.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				log.run();
 				updateStorage();
 			}
 		});
@@ -104,30 +108,37 @@ public class GUI extends JFrame {
 		scrollPane_storage.setBounds(10, 45, 200, 250);
 		contentPane.add(scrollPane_storage);
 		
-		table_storage = new JTable(model);
+		table_storage = new JTable(model_storage);
 		scrollPane_storage.setViewportView(table_storage);
+		
+		JScrollPane scrollPane_special_register = new JScrollPane();
+		scrollPane_special_register.setBounds(220, 45, 128, 172);
+		contentPane.add(scrollPane_special_register);
+		
+		table_special_register = new JTable(model_special_register);
+		scrollPane_special_register.setViewportView(table_special_register);
 
 	}
 	
 
 	
 	void initializeStorage() {
-		 model.addColumn(""); 
-		 model.addColumn("00"); 
-		 model.addColumn("01"); 
-		 model.addColumn("02"); 
-		 model.addColumn("03"); 
-		 model.addColumn("04"); 
-		 model.addColumn("05"); 
-		 model.addColumn("06"); 
-		 model.addColumn("07"); 
+		 model_storage.addColumn(""); 
+		 model_storage.addColumn("00"); 
+		 model_storage.addColumn("01"); 
+		 model_storage.addColumn("02"); 
+		 model_storage.addColumn("03"); 
+		 model_storage.addColumn("04"); 
+		 model_storage.addColumn("05"); 
+		 model_storage.addColumn("06"); 
+		 model_storage.addColumn("07"); 
 		 
 		 updateStorage();
 	}
 	
 	void updateStorage() {
-		model.getDataVector().removeAllElements();
-		model.fireTableDataChanged(); // notifies the JTable that the model has changed
+		model_storage.getDataVector().removeAllElements();
+		model_storage.fireTableDataChanged(); // notifies the JTable that the model has changed
 
 		String[] a = new String[9];
 		 
@@ -136,10 +147,24 @@ public class GUI extends JFrame {
 			for(int k = 0; k < 8; k++){
 				a[k+1] = Integer.toHexString(sto.dataStorage[(j * 8) + k]);
 			}
-			model.addRow(new Object[]{ a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8]});
+			model_storage.addRow(new Object[]{ a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8]});
 		}
 	}
 	
+	void initializeSpecialRegister() { 
+		 
+		 model_special_register.addColumn("RegName");
+		 model_special_register.addColumn("Value");
+		 
+		 updateSpecialRegister();
+	}
+	
+	void updateSpecialRegister() {
+		model_special_register.getDataVector().removeAllElements();
+		model_special_register.fireTableDataChanged(); // notifies the JTable that the model has changed
+
+		model_special_register.addRow(new Object[]{"PC", Integer.toHexString(sto.pc)});
+	}	
 	
 	void showError(int fehler)
 	{

@@ -8,7 +8,7 @@ public class storage
 	storage()
 	{
 		//testline
-		dataStorage[10] = 255;
+		//dataStorage[10] = 255;
 	}
 	
 	

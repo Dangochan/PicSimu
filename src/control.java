@@ -22,7 +22,7 @@ public class control
 	
 	public GUI gui;
 	public static storage sto;
-	public logic log;
+	public static logic log;
 	/**
 	 * Launch the application.
 	 */
@@ -56,8 +56,11 @@ public class control
 					frame.setVisible(true);
 					ctrl.gui = frame;
 					frame.ctrl = ctrl; //GUI->controller Verbindung
+					ctrl.log.gui = frame;
 					frame.sto = sto;
+					frame.log = log;
 					frame.initializeStorage();
+					frame.initializeSpecialRegister();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

@@ -2,6 +2,7 @@
 public class logic
 {
 	private storage sto;
+	public GUI gui;
 	
 	logic()
 	{
@@ -10,12 +11,17 @@ public class logic
 	
 	public void run()
 	{
-		System.out.println("run");
+		/*
+		System.out.println("Start Program");
 		while(sto.progStorage[sto.pc]!=0)
 		{
 			executeCommand();
 			sto.pc++;
 		}
+		*/
+		executeCommand();
+		gui.updateStorage();
+		gui.updateSpecialRegister();
 	}
 	
 	public void executeCommand()
@@ -179,12 +185,22 @@ public class logic
 				System.out.println("Call subroutine");
 				break;
 			case 0B101://Go to address
+				commandGoTo();
 				System.out.println("Go to address");
 				break;
 
 			default:
 				break;
 		}
+	}
+	
+	/**
+	 * Befehlsfunktionen
+	 */
+	void commandGoTo()
+	{
+		sto.pc = extractShortK();
+		
 	}
 	
 	
