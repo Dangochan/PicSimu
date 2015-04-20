@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 import java.awt.FlowLayout;
 
@@ -45,6 +46,7 @@ public class GUI extends JFrame {
 	
 	DefaultTableModel model_storage = new DefaultTableModel(); 
 	DefaultTableModel model_special_register = new DefaultTableModel(); 
+	DefaultTableModel model_source_code = new DefaultTableModel();
 	
 	public String[] columnNames = {"BP","Program"};	
 	public Object[][] tempData = new Object[1][2];
@@ -120,7 +122,10 @@ public class GUI extends JFrame {
 
 	}
 	
-
+	void initializeSourceCode(){
+		model_source_code.addColumn("BP");
+		model_source_code.addColumn("Program");
+	}
 	
 	void initializeStorage() {
 		 model_storage.addColumn(""); 
