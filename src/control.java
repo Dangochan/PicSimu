@@ -158,8 +158,26 @@ public class control
 		
 		
 		//neue Tabelle erstellen und damit die alte ersetzen
-		table_source_code = new JTable(data, gui.columnNames);
+		table_source_code = new JTable(data, gui.columnNames){
+			//Editierbarkeit für zweite Spalte ausschalten
+			@Override	
+			public boolean isCellEditable(int row, int column){
+				switch (column){
+				case 0: return true;
+				default: return false;
+				}
+			}
+			//Checkbox in erste Spalte
+			@Override
+			public Class getColumnClass(int column){
+				switch (column){
+				case 0: return Boolean.class;
+				default: return String.class;
+				}
+			}
+		};
 		gui.scrollPane_source_code.setViewportView(table_source_code);
+		
 		//Spaltenbreite von table_sourcecode setzen
 		table_source_code.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		TableColumn col_bp = table_source_code.getColumnModel().getColumn(0);
