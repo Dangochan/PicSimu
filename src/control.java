@@ -4,10 +4,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-
 import javax.swing.JFileChooser;
+import javax.swing.table.TableColumn;
 
 public class control 
 {
@@ -23,6 +24,7 @@ public class control
 	public GUI gui;
 	public static storage sto;
 	public static logic log;
+	public Object[][] data;
 	/**
 	 * Launch the application.
 	 */
@@ -133,16 +135,23 @@ public class control
 		/**
 		 * Programmtext in Tabelle schreiben
 		 */
-		Object[][] data = new Object[arrayL.size()][2];
+		data = new Object[arrayL.size()][2];
 		
 		for (int i=0; i < arrayL.size(); i++)
 		{
 			data[i][1]= arrayL.get(i);
 		}
+		
+		
 		//neue Tabelle erstellen und damit die alte ersetzen
-		JTable table_2 = new JTable(data, gui.columnNames);
-		gui.scrollPane_source_code.setViewportView(table_2);
-		table_2.setBounds(0, 0, 100, 100);
+		JTable table_source_code = new JTable(data, gui.columnNames);
+		gui.scrollPane_source_code.setViewportView(table_source_code);
+		table_source_code.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		TableColumn col_bp = table_source_code.getColumnModel().getColumn(0);
+		col_bp.setPreferredWidth(20);
+		TableColumn col_prog = table_source_code.getColumnModel().getColumn(1);
+		col_prog.setMinWidth(1000);
+		table_source_code.setBounds(0, 0, 100, 100);
 	
 		
 		if(linecounter <= (1024))
@@ -179,8 +188,6 @@ public class control
 		}
 		
 	}
-
 	
-
 
 }

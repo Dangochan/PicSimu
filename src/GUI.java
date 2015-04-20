@@ -42,7 +42,7 @@ public class GUI extends JFrame {
 	public logic log;
 	
 	
-	public JTable table_source_code;
+	public JTable table_source_code_temp;
 	public JScrollPane scrollPane_source_code;
 	public JScrollPane scrollPane_storage;
 	
@@ -101,9 +101,9 @@ public class GUI extends JFrame {
 		scrollPane_source_code.setBounds(10, 310, 663, 121);
 		contentPane.add(scrollPane_source_code);
 		
-		table_source_code = new JTable(tempData, columnNames);
-		scrollPane_source_code.setViewportView(table_source_code);
-		table_source_code.setBounds(0, 0, 100, 100);
+		table_source_code_temp = new JTable(tempData, columnNames);
+		scrollPane_source_code.setViewportView(table_source_code_temp);
+		table_source_code_temp.setBounds(0, 0, 100, 100);
 		
 		/**
 		 * Spawn Storage Table
@@ -123,11 +123,7 @@ public class GUI extends JFrame {
 		scrollPane_special_register.setViewportView(table_special_register);
 
 	}
-	
-	void initializeSourceCode(){
-		model_source_code.addColumn("BP");
-		model_source_code.addColumn("Program");
-	}
+
 	
 	void initializeStorage() {
 		 model_storage.addColumn(""); 
