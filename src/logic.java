@@ -74,6 +74,7 @@ public class logic
 				System.out.println("Clear W");
 				break;
 			case 0B1://Move W to f	
+				commandMovwf();
 				System.out.println("Move W to f	");
 				break;	
 
@@ -173,6 +174,7 @@ public class logic
 				System.out.println("Bit Test f, Skip if Set");
 				break;
 			case 0B1100://Move literal to W
+				commandMovelw();
 				System.out.println("Move literal to W");
 				break;	
 			case 0B1101://Return with literal in W
@@ -212,6 +214,15 @@ public class logic
 		sto.setPC(((sto.getPCL() & 0x18) << 8) | extractLongK());
 	}
 	
+	void commandMovelw() {
+		sto.w = extractShortK();
+		increasePC();
+	}
+	
+	void commandMovwf() {
+		sto.writeStorage(extractF(), sto.w);
+		increasePC();
+	}
 	
 	/**
 	 * Funktionen zum Extrahieren und Shiften der relevanten Befehlsteile.

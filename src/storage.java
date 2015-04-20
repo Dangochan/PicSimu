@@ -10,6 +10,7 @@ public class storage
 	public int pc = 0; 
 	public int[] stack = new int[8];
 	public int stackptr = 0;
+	public int w = 0;
 	
 	storage()
 	{
@@ -63,8 +64,8 @@ public class storage
 				break;
 			}
 		}
-		else
-		{
+		else {
+			
 			dataStorage[destination & (getRP0() << 7)] = value;
 		}
 	}
@@ -75,6 +76,10 @@ public class storage
 	 */
 	int getPC() {
 		return pc;
+	}
+	
+	int getW() {
+		return w;
 	}
 	
 	/**

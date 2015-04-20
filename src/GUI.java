@@ -121,7 +121,7 @@ public class GUI extends JFrame {
 		scrollPane_storage.setViewportView(table_storage);
 		
 		JScrollPane scrollPane_special_register = new JScrollPane();
-		scrollPane_special_register.setBounds(220, 45, 128, 172);
+		scrollPane_special_register.setBounds(220, 45, 128, 250);
 		contentPane.add(scrollPane_special_register);
 		
 		table_special_register = new JTable(model_special_register);
@@ -171,6 +171,7 @@ public class GUI extends JFrame {
 		model_special_register.getDataVector().removeAllElements();
 		model_special_register.fireTableDataChanged(); // notifies the JTable that the model has changed
 
+		model_special_register.addRow(new Object[]{"W", Integer.toHexString(sto.getW())});
 		model_special_register.addRow(new Object[]{"PC", Integer.toHexString(sto.getPC())});
 		model_special_register.addRow(new Object[]{"Stack0", Integer.toHexString(sto.stack[0])});
 		model_special_register.addRow(new Object[]{"Stack1", Integer.toHexString(sto.stack[1])});
