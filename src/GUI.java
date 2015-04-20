@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 import java.awt.FlowLayout;
 
@@ -41,12 +42,13 @@ public class GUI extends JFrame {
 	public logic log;
 	
 	
-	public JTable table_source_code;
+	public JTable table_source_code_temp;
 	public JScrollPane scrollPane_source_code;
 	public JScrollPane scrollPane_storage;
 	
 	DefaultTableModel model_storage = new DefaultTableModel(); 
 	DefaultTableModel model_special_register = new DefaultTableModel(); 
+	DefaultTableModel model_source_code = new DefaultTableModel();
 	
 	public String[] columnNames = {"BP","Program"};	
 	public Object[][] tempData = new Object[1][2];
@@ -86,7 +88,6 @@ public class GUI extends JFrame {
 		btn_start.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				log.run();
-				updateStorage();
 			}
 		});
 		btn_start.setBounds(109, 11, 89, 23);
@@ -96,12 +97,12 @@ public class GUI extends JFrame {
 		 *  Spawn Source Code Table
 		 */
 		scrollPane_source_code = new JScrollPane();
-		scrollPane_source_code.setBounds(10, 310, 663, 121);
+		scrollPane_source_code.setBounds(10, 310, 540, 121);
 		contentPane.add(scrollPane_source_code);
 		
-		table_source_code = new JTable(tempData, columnNames);
-		scrollPane_source_code.setViewportView(table_source_code);
-		table_source_code.setBounds(0, 0, 100, 100);
+		table_source_code_temp = new JTable(tempData, columnNames);
+		scrollPane_source_code.setViewportView(table_source_code_temp);
+		table_source_code_temp.setBounds(0, 0, 100, 100);
 		
 		/**
 		 * Spawn Storage Table
@@ -121,7 +122,6 @@ public class GUI extends JFrame {
 		scrollPane_special_register.setViewportView(table_special_register);
 
 	}
-	
 
 	
 	void initializeStorage() {

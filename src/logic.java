@@ -5,6 +5,7 @@ public class logic
 	public GUI gui;
 	public control ctrl;
 	
+	
 	logic()
 	{
 		
@@ -24,6 +25,7 @@ public class logic
 
 		gui.updateStorage();
 		gui.updateSpecialRegister();
+		ctrl.selectRow();
 	}
 	
 	public void executeCommand()
@@ -239,6 +241,11 @@ public class logic
 	void increasePC() {
 		sto.writeStorage(0x02, sto.getPC()+1);
 	}
+<<<<<<< HEAD
 
+=======
+	
+	
+>>>>>>> 49b009d4858d986ff6e130f8abec3d1cd4032257
 	
 }
