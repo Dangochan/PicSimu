@@ -1,8 +1,9 @@
 
 public class logic
 {
-	private storage sto;
+	public storage sto;
 	public GUI gui;
+	public control ctrl;
 	
 	logic()
 	{
@@ -20,6 +21,8 @@ public class logic
 		}
 		*/
 		executeCommand();
+
+		sto.setPC(sto.getPC()+1);
 		gui.updateStorage();
 		gui.updateSpecialRegister();
 	}
@@ -30,7 +33,7 @@ public class logic
 		//0000 0000  0000 0000  0000 0000  0000 0000
 		
 		//ohne Maske
-		switch (sto.progStorage[sto.pc])
+		switch (sto.progStorage[sto.getPC()])
 		{
 			case 0B00000001100100://Clear Watchdog Timer
 				System.out.println("Clear Watchdog Timer");
@@ -49,7 +52,7 @@ public class logic
 		}
 		//Maske
 		//        --0--         0000 0000  0xx0 0000
-		switch (sto.progStorage[sto.pc] & 0B11111110011111)
+		switch (sto.progStorage[sto.getPC()] & 0B11111110011111)
 		{
 			case 0B0://No Operation
 				System.out.println("No Operation");
@@ -61,7 +64,7 @@ public class logic
 		//Maske
 		//        --0--         0011 1111  1fff ffff
 		//        --0--         0011 1111  1xxx xxxx
-		switch ((sto.progStorage[sto.pc] & 0B11111110000000) >> 7)
+		switch ((sto.progStorage[sto.getPC()] & 0B11111110000000) >> 7)
 		{
 			case 0B11://Clear f
 				System.out.println("Clear f");
@@ -80,7 +83,7 @@ public class logic
 		} 
 		//Maske
 		//        --0--         0011 1111  dfff ffff
-		switch ((sto.progStorage[sto.pc] & 0B11111100000000) >> 8)
+		switch ((sto.progStorage[sto.getPC()] & 0B11111100000000) >> 8)
 		{
 			case 0B111://Add W and f
 				System.out.println("add w and f");
@@ -138,7 +141,7 @@ public class logic
 		} 
 		//Maske
 		//      --0--         0011 111x  kkkk kkkk
-		switch ((sto.progStorage[sto.pc] & 0B11110000000000) >> 9)
+		switch ((sto.progStorage[sto.getPC()] & 0B11110000000000) >> 9)
 		{
 			case 0B11111://Add literal and W
 				System.out.println("Add literal and W");
@@ -154,7 +157,7 @@ public class logic
 		//Maske
 		//      --0--         0011 11bb  bfff ffff
 		//      --0--         0011 11xx  kkkk kkkk
-		switch ((sto.progStorage[sto.pc] & 0B11110000000000) >> 10)
+		switch ((sto.progStorage[sto.getPC()] & 0B11110000000000) >> 10)
 		{
 			case 0B100://Bit Clear f
 				System.out.println("Bit Clear f");
@@ -179,7 +182,7 @@ public class logic
 		} 
 		//Maske
 		//      --0--         0011 1kkk  kkkk kkkk
-		switch ((sto.progStorage[sto.pc] & 0B11100000000000) >> 11)
+		switch ((sto.progStorage[sto.getPC()] & 0B11100000000000) >> 11)
 		{
 			case 0B100://Call subroutine
 				System.out.println("Call subroutine");
@@ -199,8 +202,10 @@ public class logic
 	 */
 	void commandGoTo()
 	{
-		sto.pc = extractShortK();
-		
+		sto.setPC(extractShortK());
+		sto.setPCLath(extractLongK() >> 8);
+			
+		sto.increasePC();
 	}
 	
 	
@@ -209,23 +214,24 @@ public class logic
 	 */
 	int extractF()
 	{
-		return (sto.progStorage[sto.pc] & 0B1111111);
+		return (sto.progStorage[sto.getPC()] & 0B1111111);
 	}
 	int extractD()
 	{
-		return ((sto.progStorage[sto.pc] & 0B10000000) >> 7);
+		return ((sto.progStorage[sto.getPC()] & 0B10000000) >> 7);
 	}
 	int extractB()
 	{
-		return ((sto.progStorage[sto.pc] & 0B1110000000) >> 7);
+		return ((sto.progStorage[sto.getPC()] & 0B1110000000) >> 7);
 	}
 	int extractShortK()
 	{
-		return ((sto.progStorage[sto.pc] & 0B11111111) >> 7);
+		
+		return ((sto.progStorage[sto.getPC()] & 0B11111111));
 	}
 	int extractLongK()
 	{
-		return ((sto.progStorage[sto.pc] & 0B11111111111) >> 7);
+		return ((sto.progStorage[sto.getPC()] & 0B11111111111));
 	}
 
 

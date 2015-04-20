@@ -40,6 +40,8 @@ public class GUI extends JFrame {
 	public control ctrl;
 	public storage sto;
 	public logic log;
+	
+	
 	public JTable table_source_code;
 	public JScrollPane scrollPane_source_code;
 	public JScrollPane scrollPane_storage;
@@ -168,7 +170,7 @@ public class GUI extends JFrame {
 		model_special_register.getDataVector().removeAllElements();
 		model_special_register.fireTableDataChanged(); // notifies the JTable that the model has changed
 
-		model_special_register.addRow(new Object[]{"PC", Integer.toHexString(sto.pc)});
+		model_special_register.addRow(new Object[]{"PC", Integer.toHexString(sto.getPC())});
 	}	
 	
 	void showError(int fehler)

@@ -31,18 +31,18 @@ public class control
 		/**
 		 * Erzeugen des controllers
 		 */
-		 final control ctrl = new control();
+//		 final control ctrl = new control();
 		/**
 		 * Erzeugen des storage
 		 */
-		 storage createsto = new storage();
-		 ctrl.sto = createsto;
+//		 storage createsto = new storage();
+//		 ctrl.sto = createsto;
 		/**
 		* Erzeugen der Pic Logik
 		*/
-		logic createlog = new logic();
-		ctrl.log = createlog;
-		ctrl.log.setStorage(ctrl.sto);
+//		logic createlog = new logic();
+//		ctrl.log = createlog;
+//		ctrl.log.setStorage(ctrl.sto);
 		/**
 		 * Erstellen der GUI 
 		 */
@@ -52,6 +52,7 @@ public class control
 			{
 				try 
 				{
+					/*
 					GUI frame = new GUI();
 					frame.setVisible(true);
 					ctrl.gui = frame;
@@ -61,6 +62,36 @@ public class control
 					frame.log = log;
 					frame.initializeStorage();
 					frame.initializeSpecialRegister();
+					*/
+					
+					final control ctrl = new control();
+					storage newsto = new storage(); 
+					logic newlog = new logic();
+					GUI newgui = new GUI();
+	
+					newgui.setVisible(true);
+					/**
+					 * Spawn Connections between Objects
+					 */
+					ctrl.sto = newsto;
+					ctrl.log = newlog;
+					ctrl.gui = newgui;
+					
+					ctrl.log.sto = newsto;
+					ctrl.log.gui = newgui;
+					ctrl.log.ctrl = ctrl;
+					
+					ctrl.sto.log = newlog;
+					ctrl.sto.gui = newgui;
+					ctrl.sto.ctrl = ctrl;
+					
+					ctrl.gui.sto = newsto;
+					ctrl.gui.log = newlog;
+					ctrl.gui.ctrl = ctrl;
+				
+					newgui.initializeStorage();
+					newgui.initializeSpecialRegister();
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -140,7 +171,7 @@ public class control
 			}
 			isLoad = true; //Angeben, dass ein Programm geladen wurde.
 			
-			log.run();
+			
 		}
 		else
 		{
