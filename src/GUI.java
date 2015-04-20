@@ -88,7 +88,6 @@ public class GUI extends JFrame {
 		btn_start.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				log.run();
-				updateStorage();
 			}
 		});
 		btn_start.setBounds(109, 11, 89, 23);
@@ -98,7 +97,7 @@ public class GUI extends JFrame {
 		 *  Spawn Source Code Table
 		 */
 		scrollPane_source_code = new JScrollPane();
-		scrollPane_source_code.setBounds(10, 310, 663, 121);
+		scrollPane_source_code.setBounds(10, 310, 540, 121);
 		contentPane.add(scrollPane_source_code);
 		
 		table_source_code_temp = new JTable(tempData, columnNames);

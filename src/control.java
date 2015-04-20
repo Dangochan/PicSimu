@@ -25,6 +25,10 @@ public class control
 	public static storage sto;
 	public static logic log;
 	public Object[][] data;
+	public JTable table_source_code;
+	public boolean[] isSourcecode;
+	
+	private int markierung;
 	/**
 	 * Launch the application.
 	 */
@@ -128,6 +132,16 @@ public class control
 					linecounter++;
 			}
 			in.close();
+			isSourcecode = new boolean[arrayL.size()];
+			for (int i = 0; i < arrayL.size();i++)
+			{
+				if (arrayL.get(i).charAt(0) != ' '){
+					isSourcecode[i] = true;
+				}
+				else{
+					isSourcecode[i] = false;
+				}
+			}
 		} catch (IOException e) 
 		{
 			e.printStackTrace();
@@ -144,15 +158,17 @@ public class control
 		
 		
 		//neue Tabelle erstellen und damit die alte ersetzen
-		JTable table_source_code = new JTable(data, gui.columnNames);
+		table_source_code = new JTable(data, gui.columnNames);
 		gui.scrollPane_source_code.setViewportView(table_source_code);
+		//Spaltenbreite von table_sourcecode setzen
 		table_source_code.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		TableColumn col_bp = table_source_code.getColumnModel().getColumn(0);
 		col_bp.setPreferredWidth(20);
 		TableColumn col_prog = table_source_code.getColumnModel().getColumn(1);
-		col_prog.setMinWidth(1000);
+		col_prog.setMinWidth(500);
 		table_source_code.setBounds(0, 0, 100, 100);
-	
+		
+		
 		
 		if(linecounter <= (1024))
 		{
@@ -187,6 +203,27 @@ public class control
 			gui.showError(1); //
 		}
 		
+	}
+	
+
+	/**
+	 * Zeile zum Markieren auswählen
+	 */
+	public void selectRow(){
+		int sc_pc = 0;
+		markierung = 0;
+		//durchläuft isSourcecode
+		for (int i = 0; i<arrayL.size();i++)
+		{
+			if(isSourcecode[i]==true)
+				sc_pc++;
+			if (sc_pc == sto.getPC())
+			{
+				markierung = i;
+				break;
+			}
+		}
+		table_source_code.changeSelection(markierung, 1, false, false);
 	}
 	
 
