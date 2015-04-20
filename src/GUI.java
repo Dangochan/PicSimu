@@ -102,6 +102,12 @@ public class GUI extends JFrame {
 		
 		table_source_code_temp = new JTable(tempData, columnNames);
 		scrollPane_source_code.setViewportView(table_source_code_temp);
+		//Spaltenbreite von table_sourcecode_temp setzen
+		table_source_code_temp.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		TableColumn col_bp = table_source_code_temp.getColumnModel().getColumn(0);
+		col_bp.setPreferredWidth(20);
+		TableColumn col_prog = table_source_code_temp.getColumnModel().getColumn(1);
+		col_prog.setMinWidth(515);
 		table_source_code_temp.setBounds(0, 0, 100, 100);
 		
 		/**
