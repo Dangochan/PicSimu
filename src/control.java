@@ -22,8 +22,8 @@ public class control
 	//Dieses Array bildet den Programmspeicher des Pic ab.
 	
 	public GUI gui;
-	public static storage sto;
-	public static logic log;
+	private storage sto = storage.getInstance();
+	private logic log = logic.getInstance();
 	public Object[][] data;
 	public JTable table_source_code;
 	public boolean[] isSourcecode;
@@ -71,28 +71,22 @@ public class control
 					*/
 					
 					final control ctrl = new control();
-					storage newsto = new storage(); 
-					logic newlog = new logic();
+					storage sto = storage.getInstance(); 
+					//logic log = logic.getInstance();
 					GUI newgui = new GUI();
 	
 					newgui.setVisible(true);
 					/**
 					 * Spawn Connections between Objects
 					 */
-					ctrl.sto = newsto;
-					ctrl.log = newlog;
 					ctrl.gui = newgui;
 					
-					ctrl.log.sto = newsto;
-					ctrl.log.gui = newgui;
-					ctrl.log.ctrl = ctrl;
+					ctrl.log.setGUI(newgui);
+					ctrl.log.setCTRL(ctrl);
 					
-					ctrl.sto.log = newlog;
-					ctrl.sto.gui = newgui;
-					ctrl.sto.ctrl = ctrl;
+					sto.setGUI(newgui);
+					sto.setCTRL(ctrl);
 					
-					ctrl.gui.sto = newsto;
-					ctrl.gui.log = newlog;
 					ctrl.gui.ctrl = ctrl;
 				
 					newgui.initializeStorage();
@@ -194,7 +188,7 @@ public class control
 			 * Programmspeicher löschen
 			 */
 			for(int i = 0; i < (1024); i++)
-				sto.progStorage[i]=0;
+				sto.setProgStorage(i,0);
 			/**
 			 * Einlesen des Programms
 			 */
@@ -206,7 +200,7 @@ public class control
 				if(zeile.charAt(0) != ' ') //Codezeile?
 				{
 					String comand = zeile.substring(5, 9); //Programmcode extrahieren
-					sto.progStorage[j] = Integer.parseInt(comand, 16); //Hexzahl in Int parsen & Programmspeicher füllen
+					sto.setProgStorage(j, Integer.parseInt(comand, 16));//Hexzahl in Int parsen & Programmspeicher füllen
 					//System.out.println(sto.progStorage[j]); //Test
 					j++;//Codezähler erhöhen
 				}

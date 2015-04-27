@@ -38,8 +38,8 @@ public class GUI extends JFrame {
 	private JPanel contentPane;
 
 	public control ctrl;
-	public storage sto;
-	public logic log;
+	private storage sto = storage.getInstance();
+	private logic log = logic.getInstance();
 	
 	
 	public JTable table_source_code_temp;
@@ -153,7 +153,7 @@ public class GUI extends JFrame {
 		for(int j = 0; j < 32; j++) {
 			a[0]=Integer.toHexString(j * 8);
 			for(int k = 0; k < 8; k++){
-				a[k+1] = Integer.toHexString(sto.dataStorage[(j * 8) + k]);
+				a[k+1] = Integer.toHexString(sto.getDataStorage((j * 8) + k));
 			}
 			model_storage.addRow(new Object[]{ a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8]});
 		}
@@ -173,15 +173,9 @@ public class GUI extends JFrame {
 
 		model_special_register.addRow(new Object[]{"W", Integer.toHexString(sto.getW())});
 		model_special_register.addRow(new Object[]{"PC", Integer.toHexString(sto.getPC())});
-		model_special_register.addRow(new Object[]{"Stack0", Integer.toHexString(sto.stack[0])});
-		model_special_register.addRow(new Object[]{"Stack1", Integer.toHexString(sto.stack[1])});
-		model_special_register.addRow(new Object[]{"Stack2", Integer.toHexString(sto.stack[2])});
-		model_special_register.addRow(new Object[]{"Stack3", Integer.toHexString(sto.stack[3])});
-		model_special_register.addRow(new Object[]{"Stack4", Integer.toHexString(sto.stack[4])});
-		model_special_register.addRow(new Object[]{"Stack5", Integer.toHexString(sto.stack[5])});
-		model_special_register.addRow(new Object[]{"Stack6", Integer.toHexString(sto.stack[6])});
-		model_special_register.addRow(new Object[]{"Stack7", Integer.toHexString(sto.stack[7])});
-		
+		for(int i = 0; i < 8; i++) {
+			model_special_register.addRow(new Object[]{"Stack" + i, Integer.toHexString(sto.getStack(i))});
+		}
 	}	
 	
 	void showError(int fehler)
