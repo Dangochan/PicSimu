@@ -42,6 +42,7 @@ public class storage {
 	 * Writermethode
 	 */
 	void writeStorage(int destination, int value) {
+		parseToByte(value);
 		if ((destination & 0x7F) <= 0x0B) {
 			switch (destination & 0x7F) {
 			case 0x00:// INDF
@@ -206,6 +207,7 @@ public class storage {
 	int popStack() {
 		stackptr--;
 		return stack[stackptr & 7];
+		
 	}
 
 	int parseToByte(int value) {
