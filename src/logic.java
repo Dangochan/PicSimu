@@ -26,7 +26,7 @@ public class logic
 	    }
 	    return logic.instance;
 	}
-	public void run()
+	public void step()
 	{
 		/*
 		System.out.println("Start Program");

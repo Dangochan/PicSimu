@@ -24,6 +24,11 @@ public class control
 	public GUI gui;
 	private storage sto = storage.getInstance();
 	private logic log = logic.getInstance();
+	private int linecounter;
+	public int getLinecounter() {
+		return linecounter;
+	}
+
 	public Object[][] data;
 	public JTable table_source_code;
 	public boolean[] isSourcecode;
@@ -109,7 +114,7 @@ public class control
 	
 	public void readFile()
 	{
-		int linecounter = 0; //Zählt Zeilen mit Programmcode
+		linecounter = 0; //Zählt Zeilen mit Programmcode
 		JFileChooser fc = new JFileChooser();
 		fc.showOpenDialog(null);
 		File file = fc.getSelectedFile();

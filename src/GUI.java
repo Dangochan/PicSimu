@@ -54,6 +54,7 @@ public class GUI extends JFrame {
 	public Object[][] tempData = new Object[1][2];
 	private JTable table_storage;
 	private JTable table_special_register;
+	private JButton btn_start;
 
 	/**
 	 * Create the frame.
@@ -82,17 +83,36 @@ public class GUI extends JFrame {
 		contentPane.add(btn_open_file);
 		
 		/**
-		 * Spawn Start Button
+		 * Spawn Step Button
 		 */
-		JButton btn_start = new JButton("Start");
-		btn_start.addActionListener(new ActionListener() {
+		JButton btn_step = new JButton("Step");
+		btn_step.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				log.run();
+				log.step();
 			}
 		});
-		btn_start.setBounds(109, 11, 89, 23);
-		contentPane.add(btn_start);
+		btn_step.setBounds(109, 11, 89, 23);
+		contentPane.add(btn_step);
 		
+		/**
+		 * Spawn Start Button
+		 */
+		btn_start = new JButton("Start");
+		btn_start.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				while(true)
+				{
+					log.step();
+					try{
+					wait(1000);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		btn_start.setBounds(208, 11, 89, 23);
+		contentPane.add(btn_start);
 		/**
 		 *  Spawn Source Code Table
 		 */
@@ -126,6 +146,7 @@ public class GUI extends JFrame {
 		
 		table_special_register = new JTable(model_special_register);
 		scrollPane_special_register.setViewportView(table_special_register);
+		
 
 	}
 
