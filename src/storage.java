@@ -55,16 +55,18 @@ public class storage {
 				setPC(value);
 				break;
 			case 0x03:// STATUS
-
+				dataStorage[destination] = value;
+				dataStorage[destination | (1 << 7)] = value;
 				break;
 			case 0x04:// FSR
-				dataStorage[destination | (getRP0() << 7)] = value;
+				dataStorage[destination] = value;
+				dataStorage[destination | (1 << 7)] = value;
 				break;
 			case 0x05:// PORTA
-
+				writePort(destination, value);
 				break;
 			case 0x06:// PORTB
-
+				writePort(destination, value);
 				break;
 			case 0x07:
 
@@ -220,4 +222,12 @@ public class storage {
 		return value;
 	}
 	
+	void writePort(int destination, int value) {
+		if(getRP0() == 1) {
+			dataStorage[destination | (1 << 7)] = value;
+		}
+		else {
+			dataStorage[destination] = (value ^ dataStorage[destination | (1 << 7)]); //TODO Fehler -> macht complement, soll aber eingaben nur bei 0 zulassen
+		}
+	}	
 }

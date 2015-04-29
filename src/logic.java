@@ -136,6 +136,7 @@ public class logic
 										System.out.println("Rotate Right f through Carry");
 										break;
 									case 0B1000000000://Subtract W from f
+										commandSUBWF();
 										System.out.println("Subtract W from f");
 										break;	
 									case 0B111000000000://Swap nibbles in f
@@ -174,15 +175,19 @@ public class logic
 												switch ((sto.getProgStorage(sto.getPC()) & 0B11110000000000))
 												{
 													case 0B1000000000000://Bit Clear f
+														commandBCF();
 														System.out.println("Bit Clear f");
 														break;
 													case 0B1010000000000://Bit Set f
+														commandBSF();
 														System.out.println("Bit Set f");
 														break;
 													case 0B1100000000000://Bit Test f, Skip if Clear
+														commandBTFSC();
 														System.out.println("Bit Test f, Skip if Clear");
 														break;
 													case 0B1110000000000://Bit Test f, Skip if Set
+														commandBTFSS();
 														System.out.println("Bit Test f, Skip if Set");
 														break;
 													case 0B11000000000000://Move literal to W
@@ -500,8 +505,13 @@ public class logic
 		sto.setZ(false);
 	}
 	
-	void commandADDWF() {
-		int ergebnis = sto.getW() + extractF();
+	void commandADDWF() { //TODO: C, DC Flags
+		int ergebnis;
+		if(extractF() != 0)
+			ergebnis = sto.getW() + extractF();
+		else
+			ergebnis = sto.getW() + sto.getDataStorage(sto.getDataStorage(0x04));
+		
 		if(extractD() == 0) {
 			sto.setW(ergebnis);
 		}
@@ -513,14 +523,72 @@ public class logic
 		sto.setZ(false);
 	}
 	
-	void commandCOMF() { // TODO prüfen!
-		int ergebnis = (extractF()^0B1111111);
+	void commandCOMF() { 
+		int ergebnis = (sto.getDataStorage(extractF())^0B11111111);
 		if(extractD() == 0) {
 			sto.setW(ergebnis);
 		}
 		else {
 			sto.writeStorage(extractF(), ergebnis);
 		}
+		//Standardanweisungen
+		increasePC();
+		sto.setZ(false);
+	}
+	
+	void commandSUBWF() { //TODO: C, DC Flags
+		int ergebnis;
+		if(extractF() != 0)
+			ergebnis = extractF() + subtract(sto.getW());
+		else
+			ergebnis = sto.getDataStorage(sto.getDataStorage(0x04)) + subtract(sto.getW());
+		
+		if(extractD() == 0) {
+			sto.setW(ergebnis);
+		}
+		else {
+			sto.writeStorage(extractF(), ergebnis);
+		}
+		//Standardanweisungen
+		increasePC();
+		sto.setZ(false);
+	}
+	
+	void commandBSF() {
+		int mask = (1 << extractB()); 
+		sto.writeStorage(extractF(), (sto.getDataStorage(extractF()) | mask));
+		//Standardanweisungen
+		increasePC();
+		sto.setZ(false);
+	}
+	
+	void commandBCF() {
+		int mask = (1 << extractB());
+		mask = mask ^ 0B11111111;
+		sto.writeStorage(extractF(), (sto.getDataStorage(extractF()) & mask));
+		//Standardanweisungen
+		increasePC();
+		sto.setZ(false);
+	}
+	
+	void commandBTFSC() {
+		int mask = (1 << extractB());
+		if(sto.getDataStorage(extractF() & mask) == 0) {
+			commandNOP();
+		}
+		//Standardanweisungen
+		increasePC();
+		sto.setZ(false);
+	}
+	
+	void commandBTFSS() {
+		int mask = (1 << extractB());
+		if(sto.getDataStorage(extractF() & mask) != 0) {
+			commandNOP();
+		}
+		//Standardanweisungen
+		increasePC();
+		sto.setZ(false);
 	}
 	
 	/**
@@ -548,7 +616,11 @@ public class logic
 		return ((sto.getProgStorage(sto.getPC()) & 0x7FF));
 	}
 
-	
+	int subtract(int value) {
+		value = (value ^ 0B11111111);
+		value++;
+		return value;
+	}
 	
 	void increasePC() {
 		//PC ändern
