@@ -103,11 +103,6 @@ public class GUI extends JFrame {
 				while(true)
 				{
 					log.step();
-					try{
-					wait(1000);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
 				}
 			}
 		});
@@ -194,6 +189,9 @@ public class GUI extends JFrame {
 
 		model_special_register.addRow(new Object[]{"W", Integer.toHexString(sto.getW())});
 		model_special_register.addRow(new Object[]{"PC", Integer.toHexString(sto.getPC())});
+		model_special_register.addRow(new Object[]{"C", Boolean.toString(sto.getC())});
+		model_special_register.addRow(new Object[]{"Z", Boolean.toString(sto.getZ())});
+		
 		for(int i = 0; i < 8; i++) {
 			model_special_register.addRow(new Object[]{"Stack" + i, Integer.toHexString(sto.getStack(i))});
 		}

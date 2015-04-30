@@ -12,6 +12,7 @@ public class storage {
 	private int[] stack = new int[8];
 	private int stackptr = 0;
 	private int w = 0;
+	private boolean c = false;
 	private boolean z = false;
 	
 	private storage() {
@@ -113,6 +114,10 @@ public class storage {
 		return z;
 	}
 	
+	boolean getC() {
+		return c;
+	}
+	
 	/**
 	 * Getters Byte
 	 */
@@ -172,8 +177,8 @@ public class storage {
 	}
 
 	public void setW(int w) {
-		this.w = w;
 		w = parseToByte(w);
+		this.w = w;
 		if (w == 0) {
 			z = true;
 		}
@@ -181,6 +186,10 @@ public class storage {
 
 	public void setZ(boolean z) {
 		this.z = z;
+	}
+	
+	public void setC(boolean c) {
+		this.c = c;
 	}
 	
 	/**
