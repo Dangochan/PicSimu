@@ -57,6 +57,7 @@ public class GUI extends JFrame {
 	private JTable table_special_register;
 	private JButton btn_start;
 	public boolean isRunning = false;
+	private JTable table;
 
 	/**
 	 * Create the frame.
@@ -113,7 +114,7 @@ public class GUI extends JFrame {
 									log.executeCommand();
 									updateProgress();
 									System.out.println("PC " + sto.getPc());
-									Thread.sleep(1000);
+									Thread.sleep(10);
 									
 								}
 								catch(InterruptedException e){
@@ -127,10 +128,6 @@ public class GUI extends JFrame {
 				else{
 					isRunning = false;
 					startThread.interrupt();
-					while(true)
-					{
-						log.step();
-					}
 				}
 			}
 		});
@@ -169,6 +166,14 @@ public class GUI extends JFrame {
 		
 		table_special_register = new JTable(model_special_register);
 		scrollPane_special_register.setViewportView(table_special_register);
+		
+		JScrollPane scrollPane_Ports = new JScrollPane();
+		scrollPane_Ports.setBounds(391, 172, 128, -130);
+		contentPane.add(scrollPane_Ports);
+		
+		table = new JTable();
+		table.setBounds(358, 46, 126, 121);
+		contentPane.add(table);
 		
 
 		
