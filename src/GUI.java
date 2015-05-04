@@ -103,7 +103,6 @@ public class GUI extends JFrame {
 		btn_start.addActionListener(new ActionListener() {
 			public MyThread startThread;
 			public void actionPerformed(ActionEvent arg0) {
-<<<<<<< HEAD
 				if(isRunning == false){
 					isRunning = true;
 					startThread = new MyThread(){
@@ -128,11 +127,10 @@ public class GUI extends JFrame {
 				else{
 					isRunning = false;
 					startThread.interrupt();
-=======
-				while(true)
-				{
-					log.step();
->>>>>>> 40239cc4d6e9578a6424fc33034c16f8fdc9d2e2
+					while(true)
+					{
+						log.step();
+					}
 				}
 			}
 		});
