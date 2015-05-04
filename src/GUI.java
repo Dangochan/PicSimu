@@ -50,6 +50,8 @@ public class GUI extends JFrame {
 	DefaultTableModel model_storage = new DefaultTableModel(); 
 	DefaultTableModel model_special_register = new DefaultTableModel(); 
 	DefaultTableModel model_source_code = new DefaultTableModel();
+	DefaultTableModel model_pinsA = new DefaultTableModel();
+	DefaultTableModel model_pinsB = new DefaultTableModel();
 	
 	public String[] columnNames = {"BP","Program"};	
 	public Object[][] tempData = new Object[1][2];
@@ -57,7 +59,10 @@ public class GUI extends JFrame {
 	private JTable table_special_register;
 	private JButton btn_start;
 	public boolean isRunning = false;
-	private JTable table;
+	private JTable table_pinsA;
+	private JScrollPane scrollPane_pinsA;
+	private JTable table_pinsB;
+	private JScrollPane scrollPane_pinsB;
 
 	/**
 	 * Create the frame.
@@ -160,6 +165,10 @@ public class GUI extends JFrame {
 		table_storage = new JTable(model_storage);
 		scrollPane_storage.setViewportView(table_storage);
 		
+		/**
+		 * Spawn Special Register Table
+		 */
+		
 		JScrollPane scrollPane_special_register = new JScrollPane();
 		scrollPane_special_register.setBounds(220, 45, 128, 250);
 		contentPane.add(scrollPane_special_register);
@@ -167,13 +176,27 @@ public class GUI extends JFrame {
 		table_special_register = new JTable(model_special_register);
 		scrollPane_special_register.setViewportView(table_special_register);
 		
-		JScrollPane scrollPane_Ports = new JScrollPane();
-		scrollPane_Ports.setBounds(391, 172, 128, -130);
-		contentPane.add(scrollPane_Ports);
+		/**
+		 * Spawn PinA Table
+		 */
 		
-		table = new JTable();
-		table.setBounds(358, 46, 126, 121);
-		contentPane.add(table);
+		scrollPane_pinsA = new JScrollPane();
+		scrollPane_pinsA.setBounds(358, 46, 228, 55);
+		contentPane.add(scrollPane_pinsA);
+		
+		table_pinsA = new JTable(model_pinsA);
+		scrollPane_pinsA.setViewportView(table_pinsA);
+		
+		/**
+		 * Spawn PinB Table
+		 */
+		
+		scrollPane_pinsB = new JScrollPane();
+		scrollPane_pinsB.setBounds(358, 112, 228, 55);
+		contentPane.add(scrollPane_pinsB);
+		
+		table_pinsB = new JTable(model_pinsB);
+		scrollPane_pinsB.setViewportView(table_pinsB);
 		
 
 		
@@ -184,14 +207,12 @@ public class GUI extends JFrame {
 			public void run(){
 				updateStorage();
 				updateSpecialRegister();
+				updatePinsA();
 				ctrl.selectRow();
 			}
 		});
 	}
-	
-	public void setEnabled(boolean b){
-		btn_start.setEnabled(true);
-	}
+
 	
 	void initializeStorage() {
 		 model_storage.addColumn(""); 
@@ -243,6 +264,50 @@ public class GUI extends JFrame {
 			model_special_register.addRow(new Object[]{"Stack" + i, Integer.toHexString(sto.getStack(i))});
 		}
 	}	
+	
+	void initializePinsARegister(){
+		model_pinsA.addColumn("RA");
+		model_pinsA.addColumn("7");
+		model_pinsA.addColumn("6");
+		model_pinsA.addColumn("5");
+		model_pinsA.addColumn("4");
+		model_pinsA.addColumn("3");
+		model_pinsA.addColumn("2");
+		model_pinsA.addColumn("1");
+		model_pinsA.addColumn("0");
+		
+		updatePinsA();
+	}
+	
+	void updatePinsA(){
+		model_pinsA.getDataVector().removeAllElements();
+		model_pinsA.fireTableDataChanged();
+		
+		model_pinsA.addRow(new Object[]{"Tris","i","i","i","i","i","i","i","i"});
+		model_pinsA.addRow(new Object[]{"Pin",0,0,0,0,0,0,0,0});
+	}
+	
+	void initializePinsBRegister(){
+		model_pinsB.addColumn("RB");
+		model_pinsB.addColumn("7");
+		model_pinsB.addColumn("6");
+		model_pinsB.addColumn("5");
+		model_pinsB.addColumn("4");
+		model_pinsB.addColumn("3");
+		model_pinsB.addColumn("2");
+		model_pinsB.addColumn("1");
+		model_pinsB.addColumn("0");
+		
+		updatePinsB();
+	}
+	
+	void updatePinsB(){
+		model_pinsB.getDataVector().removeAllElements();
+		model_pinsB.fireTableDataChanged();
+		
+		model_pinsB.addRow(new Object[]{"Tris","i","i","i","i","i","i","i","i"});
+		model_pinsB.addRow(new Object[]{"Pin",0,0,0,0,0,0,0,0});
+	}
 	
 	void showError(int fehler)
 	{

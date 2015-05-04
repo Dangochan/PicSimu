@@ -102,6 +102,8 @@ public class control
 				
 					newgui.initializeStorage();
 					newgui.initializeSpecialRegister();
+					newgui.initializePinsARegister();
+					newgui.initializePinsBRegister();
 					
 				} catch (Exception e) {
 					e.printStackTrace();
