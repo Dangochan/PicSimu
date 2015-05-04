@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Event;
 import java.awt.EventQueue;
 
 import javax.swing.JFileChooser;
@@ -14,6 +15,8 @@ import javax.swing.JButton;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -184,7 +187,26 @@ public class GUI extends JFrame {
 		scrollPane_pinsA.setBounds(358, 46, 228, 55);
 		contentPane.add(scrollPane_pinsA);
 		
-		table_pinsA = new JTable(model_pinsA);
+		table_pinsA = new JTable(model_pinsA){
+			@Override	
+			public boolean isCellEditable(int row, int column){
+				if (row ==0){
+					return false;
+				}
+				else {
+					switch (column){
+					case 1: case 2: case 3: case 4: case 5: case 6: case 7: return true;
+					default: return false;
+					}
+				}
+			}
+		};
+		table_pinsA.addMouseListener(new MouseAdapter() {
+			//@Override
+			public void mouseClicked(MouseEvent e){
+				System.out.println("clicked on table");
+			}
+		});
 		scrollPane_pinsA.setViewportView(table_pinsA);
 		
 		/**
@@ -195,7 +217,26 @@ public class GUI extends JFrame {
 		scrollPane_pinsB.setBounds(358, 112, 228, 55);
 		contentPane.add(scrollPane_pinsB);
 		
-		table_pinsB = new JTable(model_pinsB);
+		table_pinsB = new JTable(model_pinsB){
+			@Override	
+			public boolean isCellEditable(int row, int column){
+				if (row ==0){
+					return false;
+				}
+				else {
+					switch (column){
+					case 1: case 2: case 3: case 4: case 5: case 6: case 7: return true;
+					default: return false;
+					}
+				}
+			}
+		};
+		table_pinsB.addMouseListener(new MouseAdapter() {
+			//@Override
+			public void mouseClicked(MouseEvent e){
+				System.out.println("clicked on table");
+			}
+		});
 		scrollPane_pinsB.setViewportView(table_pinsB);
 		
 
