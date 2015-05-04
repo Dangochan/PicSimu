@@ -13,9 +13,17 @@ public class storage {
 	private int stackptr = 0;
 	private int w = 0;
 	private boolean c = false;
+	private boolean dc = false;
 	private boolean z = false;
 	
 	private storage() {
+		/*
+		 * initalizing storage
+		 */
+		dataStorage[3] = 0x18;
+		dataStorage[85] = 0xFF;
+		dataStorage[86] = 0xFF;
+		
 	}
 
 	{
@@ -43,7 +51,7 @@ public class storage {
 	 * Writermethode
 	 */
 	void writeStorage(int destination, int value) {
-		parseToByte(value);
+		value = parseToByte(value);
 		if ((destination & 0x7F) <= 0x0B) {
 			switch (destination & 0x7F) {
 			case 0x00:// INDF
@@ -56,6 +64,25 @@ public class storage {
 				setPC(value);
 				break;
 			case 0x03:// STATUS
+				//TODO bits setzen
+				if((value&0B1) != 0) {
+					c = true;
+				}
+				else {
+					c = false;
+				}
+				if((value&0B10) != 0) {
+					dc = true;
+				}
+				else {
+					dc = false;
+				}
+				if((value&0B100) != 0) {
+					z = true;
+				}
+				else {
+					z = false;
+				}
 				dataStorage[destination] = value;
 				dataStorage[destination | (1 << 7)] = value;
 				break;
@@ -115,6 +142,10 @@ public class storage {
 	}
 	
 	boolean getC() {
+		return c;
+	}
+	
+	boolean getDC() {
 		return c;
 	}
 	
@@ -180,16 +211,47 @@ public class storage {
 		w = parseToByte(w);
 		this.w = w;
 		if (w == 0) {
-			z = true;
+			setZ(true);
 		}
 	}
 
 	public void setZ(boolean z) {
 		this.z = z;
+		if(z==true) {
+			writeStorage(0X03, (getDataStorage(0X03)|0B100));
+		}
+		else {
+			writeStorage(0X03, (getDataStorage(0X03) & 0B11111011));
+		}
 	}
 	
 	public void setC(boolean c) {
 		this.c = c;
+		if(c==true) {
+			writeStorage(0X03, (getDataStorage(0X03)|0B1));
+		}
+		else {
+			writeStorage(0X03, (getDataStorage(0X03) & 0B11111110));
+		}
+	}
+	
+	public void setDC(boolean dc) {
+		this.dc = dc;
+		if(dc==true) {
+			writeStorage(0X03, (getDataStorage(0X03)|0B10));
+		}
+		else {
+			writeStorage(0X03, (getDataStorage(0X03) & 0B11111101));
+		}
+	}
+	
+	public void testAndSetDC(int zahl1, int zahl2) {
+		if(((zahl1 & 0xF) + (zahl2 & 0xF)) < 16) {
+			setDC(false);
+		}
+		else {
+			setDC(true);
+		}
 	}
 	
 	/**
