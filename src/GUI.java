@@ -103,6 +103,7 @@ public class GUI extends JFrame {
 		btn_start.addActionListener(new ActionListener() {
 			public MyThread startThread;
 			public void actionPerformed(ActionEvent arg0) {
+<<<<<<< HEAD
 				if(isRunning == false){
 					isRunning = true;
 					startThread = new MyThread(){
@@ -127,6 +128,11 @@ public class GUI extends JFrame {
 				else{
 					isRunning = false;
 					startThread.interrupt();
+=======
+				while(true)
+				{
+					log.step();
+>>>>>>> 40239cc4d6e9578a6424fc33034c16f8fdc9d2e2
 				}
 			}
 		});
@@ -227,6 +233,9 @@ public class GUI extends JFrame {
 
 		model_special_register.addRow(new Object[]{"W", Integer.toHexString(sto.getW())});
 		model_special_register.addRow(new Object[]{"PC", Integer.toHexString(sto.getPC())});
+		model_special_register.addRow(new Object[]{"C", Boolean.toString(sto.getC())});
+		model_special_register.addRow(new Object[]{"Z", Boolean.toString(sto.getZ())});
+		
 		for(int i = 0; i < 8; i++) {
 			model_special_register.addRow(new Object[]{"Stack" + i, Integer.toHexString(sto.getStack(i))});
 		}
