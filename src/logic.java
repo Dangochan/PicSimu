@@ -28,14 +28,6 @@ public class logic
 	}
 	public void step()
 	{
-		/*
-		System.out.println("Start Program");
-		while(sto.progStorage[sto.pc]!=0)
-		{
-			executeCommand();
-			sto.pc++;
-		}
-		*/
 		executeCommand();
 		
 		gui.updateStorage();
@@ -43,6 +35,23 @@ public class logic
 		ctrl.selectRow();
 		System.out.println("PC " + sto.getPc());
 	}
+	
+	/*public void run()
+	{
+		while(true){
+			
+			try{
+				executeCommand();
+				gui.updateProgress();
+				System.out.println("PC " + sto.getPc());
+				Thread.sleep(1000);
+				
+			}
+			catch(Exception e){
+				
+			}
+		}
+	}*/
 	
 	public void executeCommand()
 	{

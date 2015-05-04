@@ -27,6 +27,7 @@ import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -55,6 +56,7 @@ public class GUI extends JFrame {
 	private JTable table_storage;
 	private JTable table_special_register;
 	private JButton btn_start;
+	public boolean isRunning = false;
 
 	/**
 	 * Create the frame.
@@ -99,15 +101,32 @@ public class GUI extends JFrame {
 		 */
 		btn_start = new JButton("Start");
 		btn_start.addActionListener(new ActionListener() {
+			public MyThread startThread;
 			public void actionPerformed(ActionEvent arg0) {
-				while(true)
-				{
-					log.step();
-					try{
-					wait(1000);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+				if(isRunning == false){
+					isRunning = true;
+					startThread = new MyThread(){
+						public void run(){
+							while(! isInterrupted()){
+								
+								try{
+									log.executeCommand();
+									updateProgress();
+									System.out.println("PC " + sto.getPc());
+									Thread.sleep(1000);
+									
+								}
+								catch(InterruptedException e){
+									interrupt();
+								}
+							}
+						}
+					};
+					startThread.start();
+				}
+				else{
+					isRunning = false;
+					startThread.interrupt();
 				}
 			}
 		});
@@ -148,8 +167,22 @@ public class GUI extends JFrame {
 		scrollPane_special_register.setViewportView(table_special_register);
 		
 
+		
 	}
 
+	public void updateProgress(){
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				updateStorage();
+				updateSpecialRegister();
+				ctrl.selectRow();
+			}
+		});
+	}
+	
+	public void setEnabled(boolean b){
+		btn_start.setEnabled(true);
+	}
 	
 	void initializeStorage() {
 		 model_storage.addColumn(""); 
@@ -215,5 +248,17 @@ public class GUI extends JFrame {
 			default:
 				break;
 		}
+	}
+}
+
+class MyThread extends Thread {
+	public GUI gui;
+	private logic log = logic.getInstance();
+	@Override
+	public void run(){
+		
+	}
+	public void programStart(){
+		//log.run();
 	}
 }

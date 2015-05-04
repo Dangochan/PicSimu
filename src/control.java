@@ -10,7 +10,7 @@ import javax.swing.JTable;
 import javax.swing.JFileChooser;
 import javax.swing.table.TableColumn;
 
-public class control 
+public class control
 {
 	/**
 	 * Variables
@@ -21,6 +21,8 @@ public class control
 	public ArrayList<String> arrayL = new ArrayList<String>();
 	//Dieses Array bildet den Programmspeicher des Pic ab.
 	
+	public MyThread myThread;
+	public static MyThread startThread;
 	public GUI gui;
 	private storage sto = storage.getInstance();
 	private logic log = logic.getInstance();
@@ -38,7 +40,7 @@ public class control
 	 * Launch the application.
 	 */
 	public static void main(String[] args) 
-	{
+	{		
 		/**
 		 * Erzeugen des controllers
 		 */
@@ -84,7 +86,11 @@ public class control
 					/**
 					 * Spawn Connections between Objects
 					 */
+
+					startThread = new MyThread();
+					
 					ctrl.gui = newgui;
+					//ctrl.gui.startThread = startThread;
 					
 					ctrl.log.setGUI(newgui);
 					ctrl.log.setCTRL(ctrl);
@@ -230,7 +236,7 @@ public class control
 		int sc_pc = 0;
 		markierung = 0;
 		//durchläuft isSourcecode
-		for (int i = 0; i<arrayL.size();i++)
+		for (int i = 1; i<arrayL.size();i++)
 		{
 			if(isSourcecode[i]==true)
 				sc_pc++;
