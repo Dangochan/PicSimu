@@ -606,7 +606,7 @@ public class logic
 	
 	void commandBTFSC() {
 		int mask = (1 << extractB());
-		if(sto.getDataStorage(extractF() & mask) == 0) {
+		if((sto.getDataStorage(checkZeroF(extractF())) & mask) == 0) {
 			commandNOP();
 		}
 		//Standardanweisungen
@@ -615,7 +615,7 @@ public class logic
 	
 	void commandBTFSS() {
 		int mask = (1 << extractB());
-		if(sto.getDataStorage(extractF() & mask) != 0) {
+		if((sto.getDataStorage(checkZeroF(extractF())) & mask) != 0) {
 			commandNOP();
 		}
 		//Standardanweisungen
