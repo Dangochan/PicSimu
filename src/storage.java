@@ -301,4 +301,24 @@ public class storage {
 			dataStorage[destination] = (value ^ dataStorage[destination | (1 << 7)]); //TODO Fehler -> macht complement, soll aber eingaben nur bei 0 zulassen
 		}
 	}	
+	
+	public void changePortBit(int port, int bit){
+		int mask = 0b1 << bit;
+		if ((mask & dataStorage[port+5]) != 0){
+			dataStorage[port+5]= dataStorage[port+5]&(mask^0xff);
+		}
+		else{
+			dataStorage[port+5] = dataStorage[port+5]|(mask);
+		}
+	}
+	
+	public int readPortBit(int port, int bit){
+		int mask = 0b1 << bit;
+		if((mask & dataStorage[port+5]) != 0){
+			return 1;
+		}
+		else{
+			return 0;
+		}
+	}
 }

@@ -204,7 +204,10 @@ public class GUI extends JFrame {
 		table_pinsA.addMouseListener(new MouseAdapter() {
 			//@Override
 			public void mouseClicked(MouseEvent e){
-				System.out.println("clicked on table");
+				int col = 8-table_pinsA.columnAtPoint(e.getPoint());
+				sto.changePortBit(0, col);
+				updatePinsA();
+				updateStorage();
 			}
 		});
 		scrollPane_pinsA.setViewportView(table_pinsA);
@@ -234,7 +237,10 @@ public class GUI extends JFrame {
 		table_pinsB.addMouseListener(new MouseAdapter() {
 			//@Override
 			public void mouseClicked(MouseEvent e){
-				System.out.println("clicked on table");
+				int col = 8-table_pinsB.columnAtPoint(e.getPoint());
+				sto.changePortBit(1, col);
+				updatePinsB();
+				updateStorage();
 			}
 		});
 		scrollPane_pinsB.setViewportView(table_pinsB);
@@ -325,7 +331,11 @@ public class GUI extends JFrame {
 		model_pinsA.fireTableDataChanged();
 		
 		model_pinsA.addRow(new Object[]{"Tris","i","i","i","i","i","i","i","i"});
-		model_pinsA.addRow(new Object[]{"Pin",0,0,0,0,0,0,0,0});
+		model_pinsA.addRow(new Object[]{"Pin",
+				sto.readPortBit(0, 7), sto.readPortBit(0, 6),
+				sto.readPortBit(0, 5), sto.readPortBit(0, 4),
+				sto.readPortBit(0, 3), sto.readPortBit(0, 2),
+				sto.readPortBit(0, 1), sto.readPortBit(0, 0)});
 	}
 	
 	void initializePinsBRegister(){
@@ -347,7 +357,11 @@ public class GUI extends JFrame {
 		model_pinsB.fireTableDataChanged();
 		
 		model_pinsB.addRow(new Object[]{"Tris","i","i","i","i","i","i","i","i"});
-		model_pinsB.addRow(new Object[]{"Pin",0,0,0,0,0,0,0,0});
+		model_pinsB.addRow(new Object[]{"Pin",
+				sto.readPortBit(1, 7), sto.readPortBit(1, 6),
+				sto.readPortBit(1, 5), sto.readPortBit(1, 4),
+				sto.readPortBit(1, 3), sto.readPortBit(1, 2),
+				sto.readPortBit(1, 1), sto.readPortBit(1, 0)});
 	}
 	
 	void showError(int fehler)
