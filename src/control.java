@@ -126,17 +126,15 @@ public class control
 		JFileChooser fc = new JFileChooser();
 		fc.showOpenDialog(null);
 		File file = fc.getSelectedFile();
-		//System.out.println(file.getPath()); testweise pfad ausgeben
 		try 
 		{
 			BufferedReader in = new BufferedReader(new FileReader(file));
 			String zeile = null;
-			while ((zeile = in.readLine()) != null) 
-			{
-				//System.out.println("Gelesene Zeile: " + zeile); zeile ausgeben
+			while ((zeile = in.readLine()) != null) {
 				arrayL.add(zeile); 
-				if(zeile.charAt(0) != ' ')//linecounter wird nur erhöht, wenn die Zeile Code enthält.
+				if(zeile.charAt(0) != ' ') {//linecounter wird nur erhöht, wenn die Zeile Code enthält.
 					linecounter++;
+				}
 			}
 			in.close();
 			isSourcecode = new boolean[arrayL.size()];
@@ -206,22 +204,15 @@ public class control
 			 * Einlesen des Programms
 			 */
 			int j = 0; //Zähler nur für Codezeilen
-			for(int i=0; i < arrayL.size(); i++)//Zähler für alle Zeilen
-			{
-				
+			for(int i=0; i < arrayL.size(); i++) {//Zähler für alle Zeilen	
 				String zeile = arrayL.get(i);
-				if(zeile.charAt(0) != ' ') //Codezeile?
-				{
+				if(zeile.charAt(0) != ' ') {//Codezeile?
 					String comand = zeile.substring(5, 9); //Programmcode extrahieren
 					sto.setProgStorage(j, Integer.parseInt(comand, 16));//Hexzahl in Int parsen & Programmspeicher füllen
-					//System.out.println(sto.progStorage[j]); //Test
 					j++;//Codezähler erhöhen
 				}
-				
 			}
 			isLoad = true; //Angeben, dass ein Programm geladen wurde.
-			
-			
 		}
 		else
 		{
@@ -238,11 +229,11 @@ public class control
 		int sc_pc = 0;
 		markierung = 0;
 		//durchläuft isSourcecode
-		for (int i = 1; i<arrayL.size();i++)
+		for (int i = 0; i<arrayL.size();i++)
 		{
 			if(isSourcecode[i]==true)
 				sc_pc++;
-			if (sc_pc == sto.getPC())
+			if (sc_pc == sto.getPC()+1)
 			{
 				markierung = i;
 				break;
