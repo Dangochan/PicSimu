@@ -35,6 +35,7 @@ import javax.swing.SwingUtilities;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.JLabel;
 
 
 public class GUI extends JFrame {
@@ -49,6 +50,7 @@ public class GUI extends JFrame {
 	public JTable table_source_code_temp;
 	public JScrollPane scrollPane_source_code;
 	public JScrollPane scrollPane_storage;
+	public JLabel lbl_ProgramTime;
 	
 	DefaultTableModel model_storage = new DefaultTableModel(); 
 	DefaultTableModel model_special_register = new DefaultTableModel(); 
@@ -122,7 +124,7 @@ public class GUI extends JFrame {
 									log.executeCommand();
 									updateProgress();
 									System.out.println("PC " + sto.getPc());
-									Thread.sleep(10);
+									Thread.sleep(sto.getWait());
 									
 								}
 								catch(InterruptedException e){
@@ -245,6 +247,10 @@ public class GUI extends JFrame {
 		});
 		scrollPane_pinsB.setViewportView(table_pinsB);
 		
+		lbl_ProgramTime = new JLabel("0 us");
+		lbl_ProgramTime.setBounds(10, 458, 89, 14);
+		contentPane.add(lbl_ProgramTime);
+		
 
 		
 	}
@@ -255,6 +261,8 @@ public class GUI extends JFrame {
 				updateStorage();
 				updateSpecialRegister();
 				updatePinsA();
+				updatePinsB();
+				updateProgramTime();
 				ctrl.selectRow();
 			}
 		});
@@ -288,6 +296,11 @@ public class GUI extends JFrame {
 			}
 			model_storage.addRow(new Object[]{ a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8]});
 		}
+		
+	}
+	
+	void updateProgramTime() {
+		lbl_ProgramTime.setText(sto.getTime() + " us");
 	}
 	
 	void initializeSpecialRegister() { 

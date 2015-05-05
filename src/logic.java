@@ -30,9 +30,7 @@ public class logic
 	{
 		executeCommand();
 		
-		gui.updateStorage();
-		gui.updateSpecialRegister();
-		ctrl.selectRow();
+		gui.updateProgress();
 		System.out.println("PC " + sto.getPc());
 	}
 	
@@ -440,6 +438,8 @@ public class logic
 	void commandGOTO() {	
 		sto.setPC(((sto.getPCL() & 0x18) << 8) | extractLongK());
 		//Standardanweisungen
+		sto.incTime();
+		sto.incTime();
 	}
 	
 	void commandCLRW() {
@@ -447,6 +447,7 @@ public class logic
 		sto.setZ(true);
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandCLRF() {
@@ -454,24 +455,29 @@ public class logic
 		sto.setZ(true);
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandCALL() {
 		sto.pushStack(sto.getPC() + 1);
 		sto.setPC(((sto.getPCL() & 0x18) << 8) | extractLongK());
 		//Standardanweisungen
+		sto.incTime();
+		sto.incTime();
 	}
 	
 	void commandMOVLW() {
 		sto.setW(extractShortK());
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandMOVWF() {
 		sto.writeStorage(extractF(), sto.getW());
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandINCF() {
@@ -484,6 +490,7 @@ public class logic
 		}
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandDECF() {
@@ -496,6 +503,7 @@ public class logic
 		}
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandADDLW() {
@@ -503,6 +511,7 @@ public class logic
 		sto.setW(sto.getW()+extractShortK());
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 
@@ -520,17 +529,21 @@ public class logic
 		}
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandNOP() {
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandRETLW() {
 		sto.setW(extractF());
 		sto.setPc(sto.popStack());
 		//Standardanweisungen
+		sto.incTime();
+		sto.incTime();
 	}
 	
 	void commandADDWF() { //TODO: C, DC Flags
@@ -558,6 +571,7 @@ public class logic
 		
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandCOMF() { 
@@ -570,6 +584,7 @@ public class logic
 		}
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandSUBWF() { //TODO: C, DC Flags
@@ -587,6 +602,7 @@ public class logic
 		}
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandBSF() {
@@ -594,6 +610,7 @@ public class logic
 		sto.writeStorage(extractF(), (sto.getDataStorage(extractF()) | mask));
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandBCF() {
@@ -602,6 +619,7 @@ public class logic
 		sto.writeStorage(extractF(), (sto.getDataStorage(extractF()) & mask));
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandBTFSC() {
@@ -611,6 +629,7 @@ public class logic
 		}
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandBTFSS() {
@@ -620,6 +639,7 @@ public class logic
 		}
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandMOVF() {
@@ -631,6 +651,7 @@ public class logic
 		}
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandANDWF() {
@@ -643,12 +664,14 @@ public class logic
 		}
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandIORLW() {
 		sto.setW( extractShortK() | sto.getW() );
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandRLF() {
@@ -665,6 +688,7 @@ public class logic
 		sto.writeStorage(checkZeroF(extractF()), (ergebnis & 0B11111111));
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandRRF() {
@@ -684,6 +708,7 @@ public class logic
 		
 		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandINCFSZ() {
@@ -698,9 +723,10 @@ public class logic
 		if ((ergebnis& 0xFF) == 0) {
 			commandNOP();
 		}
-		//Standardanweisungen
 		sto.setZ(zTemp);
+		//Standardanweisungen
 		increasePC();
+		sto.incTime();
 	}
 	
 	void commandIORWF() {
@@ -713,6 +739,7 @@ public class logic
 			}
 			//Standardanweisungen
 			increasePC();
+			sto.incTime();
 	}
 	
 	/**

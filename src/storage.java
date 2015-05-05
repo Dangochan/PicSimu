@@ -15,6 +15,9 @@ public class storage {
 	private boolean c = false;
 	private boolean dc = false;
 	private boolean z = false;
+	private double time = 0;
+	private double deltatime = 1;
+	//zeit = 4/quarzfreq
 	
 	private storage() {
 		/*
@@ -186,6 +189,18 @@ public class storage {
 	public int getStackptr() {
 		return stackptr;
 	}
+	
+	public int getWait() {
+		return (int)(100 * deltatime);
+	}
+	
+	public double getTime() {
+		return time;
+	}
+	
+	/*
+	 * Setters
+	 */
 
 	public void setProgStorage(int destination, int value) {
 		this.progStorage[destination] = value;
@@ -320,5 +335,9 @@ public class storage {
 		else{
 			return 0;
 		}
+	}
+	
+	void incTime() {
+		time += deltatime;
 	}
 }
