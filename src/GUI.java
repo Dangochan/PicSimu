@@ -143,6 +143,7 @@ public class GUI extends JFrame {
 		});
 		btn_start.setBounds(208, 11, 89, 23);
 		contentPane.add(btn_start);
+		
 		/**
 		 *  Spawn Source Code Table
 		 */
@@ -173,7 +174,6 @@ public class GUI extends JFrame {
 		/**
 		 * Spawn Special Register Table
 		 */
-		
 		JScrollPane scrollPane_special_register = new JScrollPane();
 		scrollPane_special_register.setBounds(220, 45, 128, 250);
 		contentPane.add(scrollPane_special_register);
@@ -184,7 +184,6 @@ public class GUI extends JFrame {
 		/**
 		 * Spawn PinA Table
 		 */
-		
 		scrollPane_pinsA = new JScrollPane();
 		scrollPane_pinsA.setBounds(358, 46, 228, 55);
 		contentPane.add(scrollPane_pinsA);
