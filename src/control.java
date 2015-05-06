@@ -120,37 +120,34 @@ public class control
 		
 	}
 	
-	public void readFile()
+	public void initializeNewFile()
 	{
-		linecounter = 0; //Zählt Zeilen mit Programmcode
 		JFileChooser fc = new JFileChooser();
 		fc.showOpenDialog(null);
 		File file = fc.getSelectedFile();
+		//TODO initialize storage. evtl befehle aus construktor auslagern und init von hier und constructor aus aufrufen
+		//TODO prüfen, ob neues file geladen werden kann -> wichtig storage löschen, siehe oben
+		linecounter = 0; //Zählt Zeilen mit Programmcode
 		try 
 		{
 			BufferedReader in = new BufferedReader(new FileReader(file));
-			String zeile = null;
-			while ((zeile = in.readLine()) != null) {
-				arrayL.add(zeile); 
-				if(zeile.charAt(0) != ' ') {//linecounter wird nur erhöht, wenn die Zeile Code enthält.
-					linecounter++;
-				}
-			}
+			readFileInArray(in);
+			countProgramLines(in);
 			in.close();
-			isSourcecode = new boolean[arrayL.size()];
-			for (int i = 0; i < arrayL.size();i++)
-			{
-				if (arrayL.get(i).charAt(0) != ' '){
-					isSourcecode[i] = true;
-				}
-				else{
-					isSourcecode[i] = false;
-				}
-			}
+			writeSourceCodeArray();
 		} catch (IOException e) 
 		{
 			e.printStackTrace();
 		}
+		createSourceCodeTable();
+		/*
+		 * Prüfen, ob Assemblercode zu lange für den Programmspeicher des u-Controllers
+		 */
+		checkAssemblyLenght();
+		
+	}
+
+	private void createSourceCodeTable() {
 		/**
 		 * Programmtext in Tabelle schreiben
 		 */
@@ -190,9 +187,38 @@ public class control
 		TableColumn col_prog = table_source_code.getColumnModel().getColumn(1);
 		col_prog.setMinWidth(500);
 		table_source_code.setBounds(0, 0, 100, 100);
-		
-		
-		
+	}
+
+	private void readFileInArray(BufferedReader in) throws IOException {
+		String zeile = null;
+		while ((zeile = in.readLine()) != null) {
+			arrayL.add(zeile); 
+		}
+	}
+
+	private void countProgramLines(BufferedReader in) throws IOException {
+		String zeile = null;
+		while ((zeile = in.readLine()) != null) {
+			if(zeile.charAt(0) != ' ') {//linecounter wird nur erhöht, wenn die Zeile Code enthält.
+			linecounter++;
+			}
+		}
+	}
+
+	private void writeSourceCodeArray() {
+		isSourcecode = new boolean[arrayL.size()];
+		for (int i = 0; i < arrayL.size();i++)
+		{
+			if (arrayL.get(i).charAt(0) != ' '){
+				isSourcecode[i] = true;
+			}
+			else{
+				isSourcecode[i] = false;
+			}
+		}
+	}
+
+	private void checkAssemblyLenght() {
 		if(linecounter <= (1024))
 		{
 			/**
@@ -218,7 +244,6 @@ public class control
 		{
 			gui.showError(1); //
 		}
-		
 	}
 	
 

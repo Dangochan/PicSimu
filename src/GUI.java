@@ -89,7 +89,7 @@ public class GUI extends JFrame {
 		JButton btn_open_file = new JButton("Open File");
 		btn_open_file.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				ctrl.readFile();		// Datei einlesen
+				ctrl.initializeNewFile();		// Datei einlesen
 			}
 		});
 		btn_open_file.setBounds(10, 11, 89, 23);
