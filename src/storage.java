@@ -20,13 +20,17 @@ public class storage {
 	//zeit = 4/quarzfreq
 	
 	private storage() {
+		initializeStorage();
+	}
+
+	public void initializeStorage() {
 		/*
 		 * initalizing storage
 		 */
+		//TODO initialize storage prüfen. muss noch was gemacht werden??
 		dataStorage[3] = 0x18;
 		dataStorage[85] = 0xFF;
 		dataStorage[86] = 0xFF;
-		
 	}
 
 	{

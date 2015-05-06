@@ -125,8 +125,8 @@ public class control
 		JFileChooser fc = new JFileChooser();
 		fc.showOpenDialog(null);
 		File file = fc.getSelectedFile();
-		//TODO initialize storage. evtl befehle aus construktor auslagern und init von hier und constructor aus aufrufen
-		//TODO prüfen, ob neues file geladen werden kann -> wichtig storage löschen, siehe oben
+		sto.initializeStorage();
+		//TODO prüfen, ob neues file geladen werden kann
 		linecounter = 0; //Zählt Zeilen mit Programmcode
 		try 
 		{
