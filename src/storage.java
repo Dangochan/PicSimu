@@ -1,12 +1,12 @@
 public class storage {
+	
 	private static storage instance;
 	private logic log;
 
 	private GUI gui;
 	private control ctrl;
 
-	private int[] progStorage = new int[1024]; // Array für 14 bit
-												// Programmspeicher
+	private int[] progStorage = new int[1024]; // Array für 14 bit Programmspeicher
 	private int[] dataStorage = new int[256]; // Array für 8 bit Datenspeicher
 	private int pc = 0;
 	private int[] stack = new int[8];
@@ -202,7 +202,7 @@ public class storage {
 		return time;
 	}
 	
-	/*
+	/**
 	 * Setters
 	 */
 
@@ -272,10 +272,6 @@ public class storage {
 			setDC(true);
 		}
 	}
-	
-	/**
-	 * Setters
-	 */
 
 	void setPC(int value) {
 		pc = (value & 0x7FF) | pc & 0xC00;
