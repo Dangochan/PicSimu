@@ -35,7 +35,7 @@ public class control
 	public JTable table_source_code;
 	public boolean[] isSourcecode;
 	
-	private int markierung;
+	public int aktuelleZeile =0;
 	/**
 	 * Launch the application.
 	 */
@@ -252,7 +252,7 @@ public class control
 	 */
 	public void selectRow(){
 		int sc_pc = 0;
-		markierung = 0;
+		aktuelleZeile = 0;
 		//durchläuft isSourcecode
 		for (int i = 0; i<arrayL.size();i++)
 		{
@@ -260,11 +260,11 @@ public class control
 				sc_pc++;
 			if (sc_pc == sto.getPC()+1)
 			{
-				markierung = i;
+				aktuelleZeile = i;
 				break;
 			}
 		}
-		table_source_code.changeSelection(markierung, 1, false, false);
+		table_source_code.changeSelection(aktuelleZeile, 1, false, false);
 	}
 	
 

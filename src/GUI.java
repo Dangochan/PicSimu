@@ -121,11 +121,19 @@ public class GUI extends JFrame {
 							while(! isInterrupted()){
 								
 								try{
-									log.executeCommand();
-									updateProgress();
-									System.out.println("PC " + sto.getPc());
-									Thread.sleep(sto.getWait());
-									
+									log.step(); //damit nach BP die Zeile "übersprungen" wird
+									ctrl.selectRow();
+						            Boolean chk = (Boolean)ctrl.table_source_code.getModel().getValueAt(ctrl.aktuelleZeile,0);
+									if (!Boolean.TRUE.equals(chk)){ 
+										log.executeCommand();
+										updateProgress();
+										System.out.println("PC " + sto.getPc());
+										Thread.sleep(sto.getWait());
+									}
+									else{
+										interrupt();
+										isRunning = false;
+									}
 								}
 								catch(InterruptedException e){
 									interrupt();
