@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.Event;
 import java.awt.EventQueue;
 
@@ -35,6 +36,7 @@ import javax.swing.SwingUtilities;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.swing.JLabel;
 
 
@@ -257,6 +259,24 @@ public class GUI extends JFrame {
 		lbl_ProgramTime = new JLabel("0 us");
 		lbl_ProgramTime.setBounds(10, 458, 89, 14);
 		contentPane.add(lbl_ProgramTime);
+		
+		JButton btn_help = new JButton("Help");
+		btn_help.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				String current = System.getProperty("user.dir");
+				try{
+					Desktop.getDesktop().open(new File (current + "/help.pdf"));
+				}
+				catch(Exception ex){
+					
+				}
+			}
+		});
+		btn_help.setBounds(659, 11, 89, 23);
+		contentPane.add(btn_help);
 		
 
 		
