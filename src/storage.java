@@ -195,7 +195,7 @@ public class storage {
 	}
 	
 	public int getWait() {
-		return (int)(50 * deltatime);
+		return (int)(100 * deltatime);
 	}
 	
 	public double getTime() {
@@ -270,6 +270,15 @@ public class storage {
 		}
 		else {
 			setDC(true);
+		}
+	}
+	
+	public void testAndSetC(int zahl1, int zahl2) {
+		if((zahl1 + zahl2 >= 256)) {
+			setC(true);
+		}
+		else {
+			setC(false);
 		}
 	}
 
