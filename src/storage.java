@@ -12,6 +12,7 @@ public class storage {
 	private int[] stack = new int[8];
 	private int stackptr = 0;
 	private int w = 0;
+	//TODO flags durch das entsprechende datastorage bit ersetzen (macht booleans unnötig)
 	private boolean c = false;
 	private boolean dc = false;
 	private boolean z = false;
@@ -66,10 +67,11 @@ public class storage {
 
 				break;
 			case 0x02:// PCL - Programmzähler
-				setPC(value);
+				dataStorage[destination] = value;
+				dataStorage[destination | (1 << 7)] = value;
 				break;
 			case 0x03:// STATUS
-				//TODO bits setzen
+				//TODO bits löschen, wenn diese ersetzt werden. siehe todo oben
 				if((value&0B1) != 0) {
 					c = true;
 				}
@@ -111,7 +113,9 @@ public class storage {
 
 				break;
 			case 0x0A:// PCLATH
-				setPCLath(value);
+				dataStorage[destination] = value;
+				dataStorage[destination | (1 << 7)] = value;
+				
 				break;
 			case 0x0B:// INTCON
 
@@ -159,6 +163,10 @@ public class storage {
 	 */
 	int getPCL() {
 		return dataStorage[0x02];
+	}
+	
+	int getPCLath() {
+		return dataStorage[0x0A];
 	}
 
 	int getStatus() {
@@ -214,6 +222,7 @@ public class storage {
 
 	public void setPc(int pc) {
 		this.pc = pc;
+		writeStorage(0x02, pc & 0xFF);
 	}
 
 	public void setStack(int[] stack) {
@@ -287,8 +296,7 @@ public class storage {
 	}
 
 	void setPCLath(int value) {
-		dataStorage[0x0A] = value;
-		dataStorage[0x8A] = value;
+		writeStorage(0x0A, value);
 	}
 
 	/**
@@ -320,7 +328,8 @@ public class storage {
 			dataStorage[destination | (1 << 7)] = value;
 		}
 		else {
-			dataStorage[destination] = (value ^ dataStorage[destination | (1 << 7)]); //TODO Fehler -> macht complement, soll aber eingaben nur bei 0 zulassen
+			int mask = (dataStorage[destination | (1 << 7)] ^ 0xFF);
+			dataStorage[destination] = value & (mask);
 		}
 	}	
 	

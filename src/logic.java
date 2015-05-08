@@ -240,82 +240,26 @@ public class logic
 	/**
 	 * Befehlsfunktionen
 	 */
-	void commandGOTO() {	
-		sto.setPC(((sto.getPCL() & 0x18) << 8) | extractLongK());
-		//Standardanweisungen
-		sto.incTime();
-		sto.incTime();
-	}
-	
-	void commandCLRW() {
-		sto.setW(0);
-		sto.setZ(true);
-		//Standardanweisungen
-		increasePC();
-		sto.incTime();
-	}
-	
-	void commandCLRF() {
-		sto.writeStorage(checkZeroF(extractF()), 0);
-		sto.setZ(true);
-		//Standardanweisungen
-		increasePC();
-		sto.incTime();
-	}
-	
-	void commandCALL() {
-		sto.pushStack(sto.getPC() + 1);
-		sto.setPC(((sto.getPCL() & 0x18) << 8) | extractLongK());
-		//Standardanweisungen
-		sto.incTime();
-		sto.incTime();
-	}
-	
-	void commandMOVLW() {
-		sto.setW(extractShortK());
-		//Standardanweisungen
-		increasePC();
-		sto.incTime();
-	}
-	
-	void commandMOVWF() {
-		sto.writeStorage(extractF(), sto.getW());
-		//Standardanweisungen
-		increasePC();
-		sto.incTime();
-	}
-	
-	void commandINCF() {
-		sto.setZ(false);
-		if(extractD() == 0) {
-			sto.setW(sto.getDataStorage(checkZeroF(extractF()))+1);
-		}
-		else {
-			sto.writeStorage(checkZeroF(extractF()), sto.getDataStorage(checkZeroF(extractF()))+1);
-		}
-		//Standardanweisungen
-		increasePC();
-		sto.incTime();
-	}
-	
-	void commandDECF() {
-		sto.setZ(false);
-		if(extractD() == 0) {
-			sto.setW(checkZeroF(extractF())-1);
-		}
-		else {
-			sto.writeStorage(checkZeroF(extractF()), sto.getDataStorage(checkZeroF(extractF()))-1);
-		}
-		//Standardanweisungen
-		increasePC();
-		sto.incTime();
-	}
-	
 	void commandADDLW() {
 		sto.setZ(false);
 		sto.testAndSetC(sto.getW(), extractShortK());
 		sto.testAndSetDC(sto.getW(), extractShortK());
 		sto.setW(sto.getW()+extractShortK());
+		//Standardanweisungen
+		increasePC();
+		sto.incTime();
+	}
+	
+	void commandADDWF() { //TODO: C, DC Flags
+		sto.setZ(false);
+		sto.testAndSetDC(sto.getW(), sto.getDataStorage(checkZeroF(extractF())));
+		sto.testAndSetC(sto.getW(), sto.getDataStorage(checkZeroF(extractF())));
+		int ergebnis = sto.getW() + sto.getDataStorage(checkZeroF(extractF()));
+		if(extractD() == 0) {
+			sto.setW(ergebnis);
+		} else {
+			sto.writeStorage(checkZeroF(extractF()), ergebnis);
+		}
 		//Standardanweisungen
 		increasePC();
 		sto.incTime();
@@ -328,117 +272,46 @@ public class logic
 		increasePC();
 		sto.incTime();
 	}
-
-	void commandDECFSZ() {
+	
+	void commandANDWF() {
 		sto.setZ(false);
-		int ergebnis = sto.getDataStorage(checkZeroF(extractF()))-1;
+		int ergebnis = sto.getDataStorage(checkZeroF(extractF())) & sto.getW();
 		if(extractD() == 0) {
 			sto.setW(ergebnis);
-		}
-		else {
-			sto.writeStorage(checkZeroF(extractF()), sto.getDataStorage(checkZeroF(extractF()))-1);
-		}
-		if (ergebnis == 0) {
-			commandNOP();
-		}
-		//Standardanweisungen
-		increasePC();
-		sto.incTime();
-	}
-	
-	void commandNOP() {
-		//Standardanweisungen
-		increasePC();
-		sto.incTime();
-	}
-	
-	void commandRETLW() {
-		sto.setW(extractF());
-		sto.setPc(sto.popStack());
-		//Standardanweisungen
-		sto.incTime();
-		sto.incTime();
-	}
-	
-	void commandRETURN() {
-		sto.setPc(sto.popStack());
-		//Standardanweisungen
-		sto.incTime();
-		sto.incTime();		
-	}
-	
-	void commandADDWF() { //TODO: C, DC Flags
-		sto.setZ(false);
-		int ergebnis = sto.getW() + sto.getDataStorage(checkZeroF(extractF()));
-		//DC Flag setzen
-		sto.testAndSetDC(sto.getW(), sto.getDataStorage(checkZeroF(extractF())));
-		if(extractD() == 0) {
-			sto.setW(ergebnis);
-		}
-		else {
+		} else {
 			sto.writeStorage(checkZeroF(extractF()), ergebnis);
 		}
-		sto.testAndSetC(sto.getW(), sto.getDataStorage(checkZeroF(extractF())));
-		sto.testAndSetDC(sto.getW(), sto.getDataStorage(checkZeroF(extractF())));
-		//Standardanweisungen
-		increasePC();
-		sto.incTime();
-	}
-	
-	
-	void commandCOMF() { 
-		int ergebnis = (sto.getDataStorage(extractF())^0B11111111);
-		if(extractD() == 0) {
-			sto.setW(ergebnis);
-		}
-		else {
-			sto.writeStorage(extractF(), ergebnis);
-		}
-		//Standardanweisungen
-		increasePC();
-		sto.incTime();
-	}
-	
-	void commandSUBWF() {
-		int ergebnis = sto.getDataStorage(checkZeroF(extractF())) + subtract(sto.getW());
-		sto.testAndSetDC(sto.getDataStorage(checkZeroF(extractF())), subtract(sto.getW()));
-		sto.testAndSetC(sto.getDataStorage(checkZeroF(extractF())), subtract(sto.getW()));
-		if(extractD() == 0) {
-			sto.setW(ergebnis);
-		}
-		else {
-			sto.writeStorage(checkZeroF(extractF()), ergebnis);
-		}
-		if(sto.parseToByte(ergebnis) != 0){
-			sto.setZ(false);
-		}
-		//Standardanweisungen
-		increasePC();
-		sto.incTime();
-	}
-	
-	void commandSUBLW() {
-		sto.setZ(false);
-		sto.setW(extractShortK() + subtract(sto.getW()));
-		sto.testAndSetDC(extractShortK(), subtract(sto.getW()));
-		sto.testAndSetC(extractShortK(), subtract(sto.getW()));
-		//Standardanweisungen
-		increasePC();
-		sto.incTime();
-	}
-	
-	void commandBSF() {
-		int mask = (1 << extractB()); 
-		sto.writeStorage(checkZeroF(extractF()), (sto.getDataStorage(checkZeroF(extractF())) | mask));
 		//Standardanweisungen
 		increasePC();
 		sto.incTime();
 	}
 	
 	void commandBCF() {
+		boolean tempZ = sto.getZ();
 		int mask = (1 << extractB());
 		mask = mask ^ 0B11111111;
 		sto.writeStorage(checkZeroF(extractF()), (sto.getDataStorage(checkZeroF(extractF())) & mask));
+		
+		//Standardanweisungen
+		increasePC();
+		sto.incTime();
+	}
+	
+	void commandBSF() {
+		boolean tempZ = sto.getZ();
+		int mask = (1 << extractB()); 
+		sto.writeStorage(checkZeroF(extractF()), (sto.getDataStorage(checkZeroF(extractF())) | mask));
+		sto.setZ(tempZ);
+		//Standardanweisungen
+		increasePC();
+		sto.incTime();
+	}
+	
+	void commandBTFSS() {
+		int mask = (1 << extractB());
+		if((sto.getDataStorage(checkZeroF(extractF())) & mask) != 0) {
+			commandNOP();
+		}
 		//Standardanweisungen
 		increasePC();
 		sto.incTime();
@@ -454,10 +327,133 @@ public class logic
 		sto.incTime();
 	}
 	
-	void commandBTFSS() {
-		int mask = (1 << extractB());
-		if((sto.getDataStorage(checkZeroF(extractF())) & mask) != 0) {
+	void commandCALL() {
+		sto.pushStack(sto.getPC() + 1);
+		sto.setPC(((sto.getPCLath() & 0x18) << 8) | extractLongK());
+		//Standardanweisungen
+		sto.incTime();
+		sto.incTime();
+	}
+	
+	void commandCLRF() {
+		sto.setZ(false);
+		sto.writeStorage(checkZeroF(extractF()), 0);
+		//Standardanweisungen
+		increasePC();
+		sto.incTime();
+	}
+	
+	void commandCLRW() {
+		sto.setZ(false);
+		sto.setW(0);
+		//Standardanweisungen
+		increasePC();
+		sto.incTime();
+	}
+	
+	/*
+	 * CLRWDT
+	 */
+	
+	void commandCOMF() { 
+		sto.setZ(false);
+		int ergebnis = (sto.getDataStorage(extractF())^0xFF);
+		if(extractD() == 0) {
+			sto.setW(ergebnis);
+		}
+		else {
+			sto.writeStorage(extractF(), ergebnis);
+		}
+		//Standardanweisungen
+		increasePC();
+		sto.incTime();
+	}
+	
+	void commandDECF() {
+		sto.setZ(false);
+		if(extractD() == 0) {
+			sto.setW(checkZeroF(extractF())-1);
+		} else {
+			sto.writeStorage(checkZeroF(extractF()), sto.getDataStorage(checkZeroF(extractF()))-1);
+		}
+		//Standardanweisungen
+		increasePC();
+		sto.incTime();
+	}
+	
+	void commandDECFSZ() {
+		boolean tempZ = sto.getZ();
+		int ergebnis = sto.getDataStorage(checkZeroF(extractF()))-1;
+		if(extractD() == 0) {
+			sto.setW(ergebnis);
+		}
+		else {
+			sto.writeStorage(checkZeroF(extractF()), sto.getDataStorage(checkZeroF(extractF()))-1);
+		}
+		if (ergebnis == 0) {
 			commandNOP();
+		}
+		
+		//Standardanweisungen
+		increasePC();
+		sto.incTime();
+	}
+	
+	void commandGOTO() {	
+		boolean tempZ = sto.getZ();
+		sto.setPC(((sto.getPCLath() & 0x18) << 8) | extractLongK());
+		sto.setZ(tempZ);
+		//Standardanweisungen
+		sto.incTime();
+		sto.incTime();
+	}
+	
+	void commandINCF() {
+		sto.setZ(false);
+		if(extractD() == 0) {
+			sto.setW(sto.getDataStorage(checkZeroF(extractF()))+1);
+		} else {
+			sto.writeStorage(checkZeroF(extractF()), sto.getDataStorage(checkZeroF(extractF()))+1);
+		}
+		//Standardanweisungen
+		increasePC();
+		sto.incTime();
+	}
+	
+	//TODO bis hierhin stimmen die bits usw...
+	
+	void commandINCFSZ() {
+		boolean zTemp = sto.getZ();
+		int ergebnis = sto.getDataStorage(checkZeroF(extractF()))+1;
+		if(extractD() == 0) {
+			sto.setW(ergebnis);
+		}
+		else {
+			sto.writeStorage(checkZeroF(extractF()), sto.getDataStorage(checkZeroF(extractF()))+1);
+		}
+		if ((ergebnis& 0xFF) == 0) {
+			commandNOP();
+		}
+		sto.setZ(zTemp);
+		//Standardanweisungen
+		increasePC();
+		sto.incTime();
+	}
+	
+	void commandIORLW() {
+		sto.setW( extractShortK() | sto.getW() );
+		//Standardanweisungen
+		increasePC();
+		sto.incTime();
+	}
+	
+	void commandIORWF() {
+		int ergebnis = ( sto.getDataStorage(checkZeroF(extractF())) | sto.getW() );
+		if(extractD() == 0) {
+			sto.setW(ergebnis);
+		}
+		else {
+			sto.writeStorage(checkZeroF(extractF()), ergebnis);
 		}
 		//Standardanweisungen
 		increasePC();
@@ -479,26 +475,44 @@ public class logic
 		sto.incTime();
 	}
 	
-	void commandANDWF() {
-		sto.setZ(false);
-		int ergebnis = sto.getDataStorage(checkZeroF(extractF())) & sto.getW();
-		if(extractD() == 0) {
-			sto.setW(ergebnis);
-		}
-		else {
-			sto.writeStorage(checkZeroF(extractF()), ergebnis);
-		}
+	void commandMOVLW() {
+		sto.setW(extractShortK());
 		//Standardanweisungen
 		increasePC();
 		sto.incTime();
 	}
 	
-	void commandIORLW() {
-		sto.setW( extractShortK() | sto.getW() );
+	void commandMOVWF() {
+		sto.writeStorage(extractF(), sto.getW());
 		//Standardanweisungen
 		increasePC();
 		sto.incTime();
-	}
+	}	
+	
+	void commandNOP() {
+		//Standardanweisungen
+		increasePC();
+		sto.incTime();
+	}	
+	
+	/*
+	 * RETFIE
+	 */
+	
+	void commandRETLW() {
+		sto.setW(extractF());
+		sto.setPc(sto.popStack());
+		//Standardanweisungen
+		sto.incTime();
+		sto.incTime();
+	}	
+	
+	void commandRETURN() {
+		sto.setPc(sto.popStack());
+		//Standardanweisungen
+		sto.incTime();
+		sto.incTime();		
+	}	
 	
 	void commandRLF() {
 		boolean zTemp = sto.getZ();
@@ -517,7 +531,7 @@ public class logic
 		//Standardanweisungen
 		increasePC();
 		sto.incTime();
-	}
+	}	
 	
 	void commandRRF() {
 		boolean zTemp = sto.getZ();
@@ -540,38 +554,39 @@ public class logic
 		//Standardanweisungen
 		increasePC();
 		sto.incTime();
-	}
+	}	
 	
-	void commandINCFSZ() {
-		boolean zTemp = sto.getZ();
-		int ergebnis = sto.getDataStorage(checkZeroF(extractF()))+1;
+	/*
+	 * SLEEP
+	 */
+	
+	void commandSUBLW() {
+		sto.setZ(false);
+		sto.setW(extractShortK() + subtract(sto.getW()));
+		sto.testAndSetDC(extractShortK(), subtract(sto.getW()));
+		sto.testAndSetC(extractShortK(), subtract(sto.getW()));
+		//Standardanweisungen
+		increasePC();
+		sto.incTime();
+	}	
+	
+	void commandSUBWF() {
+		int ergebnis = sto.getDataStorage(checkZeroF(extractF())) + subtract(sto.getW());
+		sto.testAndSetDC(sto.getDataStorage(checkZeroF(extractF())), subtract(sto.getW()));
+		sto.testAndSetC(sto.getDataStorage(checkZeroF(extractF())), subtract(sto.getW()));
 		if(extractD() == 0) {
 			sto.setW(ergebnis);
 		}
 		else {
-			sto.writeStorage(checkZeroF(extractF()), sto.getDataStorage(checkZeroF(extractF()))+1);
+			sto.writeStorage(checkZeroF(extractF()), ergebnis);
 		}
-		if ((ergebnis& 0xFF) == 0) {
-			commandNOP();
+		if(sto.parseToByte(ergebnis) != 0){
+			sto.setZ(false);
 		}
-		sto.setZ(zTemp);
 		//Standardanweisungen
 		increasePC();
 		sto.incTime();
-	}
-	
-	void commandIORWF() {
-			int ergebnis = ( sto.getDataStorage(checkZeroF(extractF())) | sto.getW() );
-			if(extractD() == 0) {
-				sto.setW(ergebnis);
-			}
-			else {
-				sto.writeStorage(checkZeroF(extractF()), ergebnis);
-			}
-			//Standardanweisungen
-			increasePC();
-			sto.incTime();
-	}
+	}	
 	
 	void commandSWAPF() {
 		boolean tempZ = sto.getZ();
@@ -586,7 +601,15 @@ public class logic
 		//Standardanweisungen
 		increasePC();
 		sto.incTime();
-	}
+	}	
+	
+	void commandXORLW() {
+		sto.setZ(false);
+		sto.setW(extractShortK() ^ sto.getW());
+		//Standardanweisungen
+		increasePC();
+		sto.incTime();
+	}	
 	
 	void commandXORWF() {
 		int ergebnis = sto.getDataStorage(checkZeroF(extractF())) ^ sto.getW();
@@ -601,13 +624,7 @@ public class logic
 		sto.incTime();
 	}
 	
-	void commandXORLW() {
-		sto.setZ(false);
-		sto.setW(extractShortK() ^ sto.getW());
-		//Standardanweisungen
-		increasePC();
-		sto.incTime();
-	}
+
 	
 	/**
 	 * Funktionen zum Extrahieren und Shiften der relevanten Befehlsteile.
@@ -642,7 +659,7 @@ public class logic
 	
 	void increasePC() {
 		//PC ändern
-		sto.writeStorage(0x02, sto.getPC()+1);
+		sto.setPC(sto.getPC()+1);
 	}
 
 	int checkZeroF(int value) {
