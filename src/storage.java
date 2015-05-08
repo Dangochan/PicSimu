@@ -28,9 +28,9 @@ public class storage {
 		 * initalizing storage
 		 */
 		//TODO initialize storage prüfen. muss noch was gemacht werden??
-		dataStorage[3] = 0x18;
-		dataStorage[85] = 0xFF;
-		dataStorage[86] = 0xFF;
+		dataStorage[0x3] = 0x18;
+		dataStorage[0x85] = 0xFF;
+		dataStorage[0x86] = 0xFF;
 	}
 
 	{
@@ -195,7 +195,7 @@ public class storage {
 	}
 	
 	public int getWait() {
-		return (int)(100 * deltatime);
+		return (int)(50 * deltatime);
 	}
 	
 	public double getTime() {

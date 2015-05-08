@@ -588,17 +588,12 @@ public class logic
 	}
 	
 	void commandSUBWF() { //TODO: C, DC Flags
-		int ergebnis;
-		if(extractF() != 0)
-			ergebnis = extractF() + subtract(sto.getW());
-		else
-			ergebnis = sto.getDataStorage(sto.getDataStorage(0x04)) + subtract(sto.getW());
-		
+		int ergebnis = sto.getDataStorage(checkZeroF(extractF())) + subtract(sto.getW());
 		if(extractD() == 0) {
 			sto.setW(ergebnis);
 		}
 		else {
-			sto.writeStorage(extractF(), ergebnis);
+			sto.writeStorage(checkZeroF(extractF()), ergebnis);
 		}
 		//Standardanweisungen
 		increasePC();
@@ -693,7 +688,9 @@ public class logic
 	
 	void commandRRF() {
 		boolean cMerker = sto.getC();
-		if((checkZeroF(extractF())& 0B1) != 0 ) {
+		System.out.println("der Wert an der Speicherstelle ist " + sto.getDataStorage(checkZeroF(extractF())) );
+		System.out.println("Das 0bit ist " + (sto.getDataStorage(checkZeroF(extractF()))& 0B1));
+		if((sto.getDataStorage(checkZeroF(extractF()))& 0B1) != 0 ) {
 			sto.setC(true);
 		}
 		else {
