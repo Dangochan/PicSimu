@@ -28,15 +28,13 @@ public class storage {
 		 * initalizing storage
 		 */
 		//TODO initialize storage prüfen. muss noch was gemacht werden??
+		//TODO was muss gemacht werden, damit eien neues file geladen werden kann. (PC = 0 beim laden, stackptr zurücksetzen...)
 		dataStorage[0x3] = 0x18;
 		dataStorage[0x85] = 0xFF;
 		dataStorage[0x86] = 0xFF;
 	}
 
-	{
-		// testline
-		// dataStorage[10] = 255;
-	}
+	
 
 	public static synchronized storage getInstance() {
 		if (storage.instance == null) {

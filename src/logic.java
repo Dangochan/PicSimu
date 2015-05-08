@@ -234,6 +234,9 @@ public class logic
 		}
 	}
 	
+	//TODO alle befehle auf Flags prüfen 
+	//TODO alle befehle auf maschinenzyklen prüfen
+	
 	/**
 	 * Befehlsfunktionen
 	 */
