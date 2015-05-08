@@ -16,26 +16,23 @@ public class control
 	 * Variables
 	 */
 	//Prüfvar ob ein Programm geladen ist
-	boolean isLoad = false;
+	public boolean isLoad = false;
 	//Liste um Befehle einzulesen
-	public ArrayList<String> arrayL = new ArrayList<String>();
-	//Dieses Array bildet den Programmspeicher des Pic ab.
-	
+	public ArrayList<String> arrayL = new ArrayList<String>(); //Dieses Array bildet den Programmspeicher des Pic ab.
 	public MyThread myThread;
 	public static MyThread startThread;
 	public GUI gui;
-	private storage sto = storage.getInstance();
-	private logic log = logic.getInstance();
-	private int linecounter;
 	public int getLinecounter() {
 		return linecounter;
 	}
-
 	public Object[][] data;
 	public JTable table_source_code;
 	public boolean[] isSourcecode;
-	
 	public int aktuelleZeile =0;
+	
+	private storage sto = storage.getInstance();
+	private logic log = logic.getInstance();
+	private int linecounter;
 	/**
 	 * Launch the application.
 	 */
@@ -65,24 +62,13 @@ public class control
 			{
 				try 
 				{
-					/*
-					GUI frame = new GUI();
-					frame.setVisible(true);
-					ctrl.gui = frame;
-					frame.ctrl = ctrl; //GUI->controller Verbindung
-					ctrl.log.gui = frame;
-					frame.sto = sto;
-					frame.log = log;
-					frame.initializeStorage();
-					frame.initializeSpecialRegister();
-					*/
-					
 					final control ctrl = new control();
 					storage sto = storage.getInstance(); 
 					//logic log = logic.getInstance();
 					GUI newgui = new GUI();
 	
 					newgui.setVisible(true);
+					
 					/**
 					 * Spawn Connections between Objects
 					 */
@@ -90,7 +76,6 @@ public class control
 					startThread = new MyThread();
 					
 					ctrl.gui = newgui;
-					//ctrl.gui.startThread = startThread;
 					
 					ctrl.log.setGUI(newgui);
 					ctrl.log.setCTRL(ctrl);

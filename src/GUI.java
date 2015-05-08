@@ -60,12 +60,13 @@ public class GUI extends JFrame {
 	DefaultTableModel model_pinsA = new DefaultTableModel();
 	DefaultTableModel model_pinsB = new DefaultTableModel();
 	
+	public boolean isRunning = false;
 	public String[] columnNames = {"BP","Program"};	
 	public Object[][] tempData = new Object[1][2];
+	
 	private JTable table_storage;
 	private JTable table_special_register;
 	private JButton btn_start;
-	public boolean isRunning = false;
 	private JTable table_pinsA;
 	private JScrollPane scrollPane_pinsA;
 	private JTable table_pinsB;
@@ -125,8 +126,8 @@ public class GUI extends JFrame {
 								try{
 									log.step(); //damit nach BP die Zeile "übersprungen" wird
 									ctrl.selectRow();
-						            Boolean chk = (Boolean)ctrl.table_source_code.getModel().getValueAt(ctrl.aktuelleZeile,0);
-									if (!Boolean.TRUE.equals(chk)){ 
+						            Boolean check = (Boolean)ctrl.table_source_code.getModel().getValueAt(ctrl.aktuelleZeile,0); //Breakpoint gesetzt?
+									if (!Boolean.TRUE.equals(check)){ 
 										log.executeCommand();
 										updateProgress();
 										System.out.println("PC " + sto.getPc());
@@ -153,6 +154,28 @@ public class GUI extends JFrame {
 		});
 		btn_start.setBounds(208, 11, 89, 23);
 		contentPane.add(btn_start);
+		
+		/**
+		 * Spawn Help Button
+		 */
+		
+		JButton btn_help = new JButton("Help");
+		btn_help.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				String current = System.getProperty("user.dir");
+				try{
+					Desktop.getDesktop().open(new File (current + "/help.pdf"));
+				}
+				catch(Exception ex){
+					
+				}
+			}
+		});
+		btn_help.setBounds(659, 11, 89, 23);
+		contentPane.add(btn_help);
 		
 		/**
 		 *  Spawn Source Code Table
@@ -256,27 +279,14 @@ public class GUI extends JFrame {
 		});
 		scrollPane_pinsB.setViewportView(table_pinsB);
 		
+		/**
+		 * Spawn Program Time Label
+		 */
+		
 		lbl_ProgramTime = new JLabel("0 us");
 		lbl_ProgramTime.setBounds(10, 458, 89, 14);
 		contentPane.add(lbl_ProgramTime);
 		
-		JButton btn_help = new JButton("Help");
-		btn_help.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				String current = System.getProperty("user.dir");
-				try{
-					Desktop.getDesktop().open(new File (current + "/help.pdf"));
-				}
-				catch(Exception ex){
-					
-				}
-			}
-		});
-		btn_help.setBounds(659, 11, 89, 23);
-		contentPane.add(btn_help);
 		
 
 		
@@ -429,8 +439,5 @@ class MyThread extends Thread {
 	@Override
 	public void run(){
 		
-	}
-	public void programStart(){
-		//log.run();
 	}
 }
