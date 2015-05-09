@@ -1,10 +1,10 @@
 public class storage {
 	
 	private static storage instance;
-	private logic log;
+	//private logic log;
 
-	private GUI gui;
-	private control ctrl;
+	//private GUI gui;
+	//private control ctrl;
 
 	private int[] progStorage = new int[1024]; // Array für 14 bit Programmspeicher
 	private int[] dataStorage = new int[256]; // Array für 8 bit Datenspeicher
@@ -12,10 +12,6 @@ public class storage {
 	private int[] stack = new int[8];
 	private int stackptr = 0;
 	private int w = 0;
-	//TODO flags durch das entsprechende datastorage bit ersetzen (macht booleans unnötig)
-	private boolean c = false;
-	private boolean dc = false;
-	private boolean z = false;
 	private double time = 0;
 	private double deltatime = 1;
 	//zeit = 4/quarzfreq
@@ -28,9 +24,10 @@ public class storage {
 		/*
 		 * initalizing storage
 		 */
-		//TODO initialize storage prüfen. muss noch was gemacht werden??
-		//TODO was muss gemacht werden, damit eien neues file geladen werden kann. (PC = 0 beim laden, stackptr zurücksetzen...)
-		dataStorage[0x3] = 0x18;
+		pc = 0;
+		stackptr = 0;
+		//TODO Herr Lehmann fragen: werden den TrisReg zurückgesetzt? Wird Status zurückgesetzt? eigentlich nicht
+		//dataStorage[0x3] = 0x18;
 		dataStorage[0x85] = 0xFF;
 		dataStorage[0x86] = 0xFF;
 	}
@@ -40,18 +37,18 @@ public class storage {
 	public static synchronized storage getInstance() {
 		if (storage.instance == null) {
 			storage.instance = new storage();
-			instance.log = logic.getInstance();
+			//instance.log = logic.getInstance();
 		}
 		return storage.instance;
 	}
 
-	public void setGUI(GUI aGUI) {
+	/*public void setGUI(GUI aGUI) {
 		gui = aGUI;
 	}
 
 	public void setCTRL(control aCTRL) {
 		ctrl = aCTRL;
-	}
+	}*/
 
 	/**
 	 * Writermethode
@@ -71,25 +68,6 @@ public class storage {
 				dataStorage[destination | (1 << 7)] = value;
 				break;
 			case 0x03:// STATUS
-				//TODO bits löschen, wenn diese ersetzt werden. siehe todo oben
-				if((value&0B1) != 0) {
-					c = true;
-				}
-				else {
-					c = false;
-				}
-				if((value&0B10) != 0) {
-					dc = true;
-				}
-				else {
-					dc = false;
-				}
-				if((value&0B100) != 0) {
-					z = true;
-				}
-				else {
-					z = false;
-				}
 				dataStorage[destination] = value;
 				dataStorage[destination | (1 << 7)] = value;
 				break;
@@ -131,7 +109,7 @@ public class storage {
 		
 		
 		if(value == 0) {
-			z = true;
+			setZ(true);
 		}
 	}
 
@@ -147,15 +125,27 @@ public class storage {
 	}
 
 	boolean getZ() {
-		return z;
+		if ((dataStorage[0x03] & 0B100) != 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	boolean getC() {
-		return c;
+		if ((dataStorage[0x03] & 0B1) != 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	boolean getDC() {
-		return c;
+		if ((dataStorage[0x03] & 0B10) != 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	/**
@@ -196,7 +186,7 @@ public class storage {
 		return stack[i];
 	}
 
-	public int getStackptr() {
+	public int getStackPtr() {
 		return stackptr;
 	}
 	
@@ -242,7 +232,7 @@ public class storage {
 	}
 
 	public void setZ(boolean z) {
-		this.z = z;
+		//this.z = z;
 		if(z==true) {
 			writeStorage(0X03, (getDataStorage(0X03)|0B100));
 		}
@@ -252,7 +242,6 @@ public class storage {
 	}
 	
 	public void setC(boolean c) {
-		this.c = c;
 		if(c==true) {
 			writeStorage(0X03, (getDataStorage(0X03)|0B1));
 		}
@@ -262,7 +251,7 @@ public class storage {
 	}
 	
 	public void setDC(boolean dc) {
-		this.dc = dc;
+		//this.dc = dc;
 		if(dc==true) {
 			writeStorage(0X03, (getDataStorage(0X03)|0B10));
 		}

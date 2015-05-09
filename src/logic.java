@@ -5,14 +5,9 @@ public class logic
 	
 	private storage sto;
 	private GUI gui;
-	private control ctrl;
 	
 	public void setGUI(GUI aGUI) {
 		gui = aGUI;
-	}
-	
-	public void setCTRL(control aCTRL) {
-		ctrl = aCTRL;
 	}
 	
 	private logic()
@@ -23,6 +18,7 @@ public class logic
 		if (logic.instance == null) {
 			logic.instance = new logic ();
 			instance.sto = storage.getInstance();
+			instance.gui = GUI.getInstance();
 	    }
 	    return logic.instance;
 	}
@@ -234,8 +230,6 @@ public class logic
 		}
 	}
 	
-	//TODO alle befehle auf Flags prüfen 
-	//TODO alle befehle auf maschinenzyklen prüfen
 	
 	/**
 	 * Befehlsfunktionen
@@ -250,7 +244,7 @@ public class logic
 		sto.incTime();
 	}
 	
-	void commandADDWF() { //TODO: C, DC Flags
+	void commandADDWF() {
 		sto.setZ(false);
 		sto.testAndSetDC(sto.getW(), sto.getDataStorage(checkZeroF(extractF())));
 		sto.testAndSetC(sto.getW(), sto.getDataStorage(checkZeroF(extractF())));
@@ -291,7 +285,7 @@ public class logic
 		int mask = (1 << extractB());
 		mask = mask ^ 0B11111111;
 		sto.writeStorage(checkZeroF(extractF()), (sto.getDataStorage(checkZeroF(extractF())) & mask));
-		
+		sto.setZ(tempZ);
 		//Standardanweisungen
 		increasePC();
 		sto.incTime();
@@ -386,14 +380,13 @@ public class logic
 		int ergebnis = sto.getDataStorage(checkZeroF(extractF()))-1;
 		if(extractD() == 0) {
 			sto.setW(ergebnis);
-		}
-		else {
+		} else {
 			sto.writeStorage(checkZeroF(extractF()), sto.getDataStorage(checkZeroF(extractF()))-1);
 		}
+		sto.setZ(tempZ);
 		if (ergebnis == 0) {
 			commandNOP();
 		}
-		
 		//Standardanweisungen
 		increasePC();
 		sto.incTime();
@@ -420,18 +413,15 @@ public class logic
 		sto.incTime();
 	}
 	
-	//TODO bis hierhin stimmen die bits usw...
-	
 	void commandINCFSZ() {
 		boolean zTemp = sto.getZ();
 		int ergebnis = sto.getDataStorage(checkZeroF(extractF()))+1;
 		if(extractD() == 0) {
 			sto.setW(ergebnis);
-		}
-		else {
+		} else {
 			sto.writeStorage(checkZeroF(extractF()), sto.getDataStorage(checkZeroF(extractF()))+1);
 		}
-		if ((ergebnis& 0xFF) == 0) {
+		if ((ergebnis & 0xFF) == 0) {
 			commandNOP();
 		}
 		sto.setZ(zTemp);
@@ -441,6 +431,7 @@ public class logic
 	}
 	
 	void commandIORLW() {
+		sto.setZ(false);
 		sto.setW( extractShortK() | sto.getW() );
 		//Standardanweisungen
 		increasePC();
@@ -448,11 +439,11 @@ public class logic
 	}
 	
 	void commandIORWF() {
+		sto.setZ(false);
 		int ergebnis = ( sto.getDataStorage(checkZeroF(extractF())) | sto.getW() );
 		if(extractD() == 0) {
 			sto.setW(ergebnis);
-		}
-		else {
+		} else {
 			sto.writeStorage(checkZeroF(extractF()), ergebnis);
 		}
 		//Standardanweisungen
@@ -461,14 +452,11 @@ public class logic
 	}
 	
 	void commandMOVF() {
+		sto.setZ(false);
 		if(extractD() == 0) {
 			sto.setW(sto.getDataStorage(checkZeroF(extractF())));
-		}
-		else {
+		} else {
 			sto.writeStorage(checkZeroF(extractF()), sto.getDataStorage(checkZeroF(extractF())));
-		}
-		if(sto.getDataStorage(checkZeroF(extractF())) != 0) {
-			sto.setZ(false);
 		}
 		//Standardanweisungen
 		increasePC();
@@ -476,14 +464,18 @@ public class logic
 	}
 	
 	void commandMOVLW() {
+		boolean tempZ = sto.getZ();
 		sto.setW(extractShortK());
+		sto.setZ(tempZ);
 		//Standardanweisungen
 		increasePC();
 		sto.incTime();
 	}
 	
 	void commandMOVWF() {
+		boolean tempZ = sto.getZ();
 		sto.writeStorage(extractF(), sto.getW());
+		sto.setZ(tempZ);
 		//Standardanweisungen
 		increasePC();
 		sto.incTime();
@@ -500,8 +492,11 @@ public class logic
 	 */
 	
 	void commandRETLW() {
+		boolean tempZ = sto.getZ();
 		sto.setW(extractF());
 		sto.setPc(sto.popStack());
+		//TODO aus popstack auch pclath schreiben. wird pcl geschrieben?
+		sto.setZ(tempZ);
 		//Standardanweisungen
 		sto.incTime();
 		sto.incTime();
@@ -509,6 +504,7 @@ public class logic
 	
 	void commandRETURN() {
 		sto.setPc(sto.popStack());
+		//TODO aus popstack auch pclath schreiben. wird pcl geschrieben?
 		//Standardanweisungen
 		sto.incTime();
 		sto.incTime();		
@@ -522,8 +518,7 @@ public class logic
 		}
 		if((ergebnis & 0B100000000) != 0 ) { // ist das rausgeschobene bit = 1?
 			sto.setC(true);
-		}
-		else {
+		} else {
 			sto.setC(false);
 		}
 		sto.writeStorage(checkZeroF(extractF()), (ergebnis & 0B11111111));
@@ -540,8 +535,7 @@ public class logic
 		System.out.println("Das 0bit ist " + (sto.getDataStorage(checkZeroF(extractF()))& 0B1));
 		if((sto.getDataStorage(checkZeroF(extractF()))& 0B1) != 0 ) {
 			sto.setC(true);
-		}
-		else {
+		} else {
 			sto.setC(false);
 		}
 		int ergebnis= (sto.getDataStorage(checkZeroF(extractF())) >> 1);
@@ -549,7 +543,6 @@ public class logic
 			ergebnis = ergebnis | 0B10000000;
 		}
 		sto.writeStorage(checkZeroF(extractF()), (ergebnis & 0B11111111));
-		
 		sto.setZ(zTemp);
 		//Standardanweisungen
 		increasePC();
@@ -571,13 +564,13 @@ public class logic
 	}	
 	
 	void commandSUBWF() {
+		sto.setZ(false);
 		int ergebnis = sto.getDataStorage(checkZeroF(extractF())) + subtract(sto.getW());
 		sto.testAndSetDC(sto.getDataStorage(checkZeroF(extractF())), subtract(sto.getW()));
 		sto.testAndSetC(sto.getDataStorage(checkZeroF(extractF())), subtract(sto.getW()));
 		if(extractD() == 0) {
 			sto.setW(ergebnis);
-		}
-		else {
+		} else {
 			sto.writeStorage(checkZeroF(extractF()), ergebnis);
 		}
 		if(sto.parseToByte(ergebnis) != 0){
@@ -593,8 +586,7 @@ public class logic
 		int ergebnis = (((sto.getDataStorage(checkZeroF(extractF())) & 0B1111) << 4) | ((sto.getDataStorage(checkZeroF(extractF())) & 0B11110000) >> 4)  );
 		if(extractD() == 0) {
 			sto.setW(ergebnis);
-		}
-		else {
+		} else {
 		sto.writeStorage(checkZeroF(extractF()), ergebnis);
 		}
 		sto.setZ(tempZ);
@@ -612,6 +604,7 @@ public class logic
 	}	
 	
 	void commandXORWF() {
+		sto.setZ(false);
 		int ergebnis = sto.getDataStorage(checkZeroF(extractF())) ^ sto.getW();
 		if(extractD() == 0) {
 			sto.setW(ergebnis);

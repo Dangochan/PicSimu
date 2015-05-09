@@ -12,6 +12,11 @@ import javax.swing.table.TableColumn;
 
 public class control
 {
+	private static control instance;
+	
+	private storage sto = storage.getInstance();
+	private logic log = logic.getInstance();
+	private GUI gui;
 	/**
 	 * Variables
 	 */
@@ -21,7 +26,7 @@ public class control
 	public ArrayList<String> arrayL = new ArrayList<String>(); //Dieses Array bildet den Programmspeicher des Pic ab.
 	public MyThread myThread;
 	public static MyThread startThread;
-	public GUI gui;
+	
 	public int getLinecounter() {
 		return linecounter;
 	}
@@ -30,8 +35,7 @@ public class control
 	public boolean[] isSourcecode;
 	public int aktuelleZeile =0;
 	
-	private storage sto = storage.getInstance();
-	private logic log = logic.getInstance();
+	
 	private int linecounter;
 	/**
 	 * Launch the application.
@@ -62,33 +66,13 @@ public class control
 			{
 				try 
 				{
-					final control ctrl = new control();
-					storage sto = storage.getInstance(); 
-					//logic log = logic.getInstance();
-					GUI newgui = new GUI();
-	
-					newgui.setVisible(true);
-					
-					/**
-					 * Spawn Connections between Objects
-					 */
-
+					GUI gui = GUI.getInstance();
+					gui.setVisible(true);
 					startThread = new MyThread();
-					
-					ctrl.gui = newgui;
-					
-					ctrl.log.setGUI(newgui);
-					ctrl.log.setCTRL(ctrl);
-					
-					sto.setGUI(newgui);
-					sto.setCTRL(ctrl);
-					
-					ctrl.gui.ctrl = ctrl;
-				
-					newgui.initializeStorage();
-					newgui.initializeSpecialRegister();
-					newgui.initializePinsARegister();
-					newgui.initializePinsBRegister();
+					gui.initializeStorage();
+					gui.initializeSpecialRegister();
+					gui.initializePinsARegister();
+					gui.initializePinsBRegister();
 					
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -100,9 +84,19 @@ public class control
 	/**
 	 * Control Constructor
 	 */
-	public control ()
+	private control ()
 	{
 		
+	}
+	
+	public static synchronized control getInstance () {
+		if (control.instance == null) {
+			control.instance = new control ();
+			instance.sto = storage.getInstance();
+			instance.log = logic.getInstance();
+			instance.gui = GUI.getInstance();
+	    }
+	    return control.instance;
 	}
 	
 	public void initializeNewFile()
@@ -111,6 +105,7 @@ public class control
 		fc.showOpenDialog(null);
 		File file = fc.getSelectedFile();
 		sto.initializeStorage();
+		System.out.println("pc = " + sto.getPC());
 		//TODO prüfen, ob neues file geladen werden kann
 		linecounter = 0; //Zählt Zeilen mit Programmcode
 		try 
@@ -129,6 +124,7 @@ public class control
 		 * Prüfen, ob Assemblercode zu lange für den Programmspeicher des u-Controllers
 		 */
 		checkAssemblyLenght();
+		
 		
 	}
 

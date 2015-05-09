@@ -38,21 +38,30 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 
 public class GUI extends JFrame {
 
+	private static GUI instance;
 	private JPanel contentPane;
 
 	public control ctrl;
-	private storage sto = storage.getInstance();
-	private logic log = logic.getInstance();
+	private storage sto;
+	private logic log;
 	
 	
 	public JTable table_source_code_temp;
 	public JScrollPane scrollPane_source_code;
 	public JScrollPane scrollPane_storage;
-	public JLabel lbl_ProgramTime;
+	
+	public JLabel lblW;
+	public JLabel lblPC;
+	public JLabel lblZ;
+	public JLabel lblC;
+	public JLabel lblDC;
+	public JLabel lblStackPtr;
+	public JLabel lblTime;
 	
 	DefaultTableModel model_storage = new DefaultTableModel(); 
 	DefaultTableModel model_special_register = new DefaultTableModel(); 
@@ -66,7 +75,7 @@ public class GUI extends JFrame {
 	
 	private JTable table_storage;
 	private JTable table_special_register;
-	private JButton btn_start;
+	private JButton btn_startstop;
 	private JTable table_pinsA;
 	private JScrollPane scrollPane_pinsA;
 	private JTable table_pinsB;
@@ -75,12 +84,12 @@ public class GUI extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public GUI() {
+	private GUI() {
 		/**
 		 * Spawn Layout
 		 */
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 774, 537);
+		setBounds(100, 100, 867, 537);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -93,6 +102,7 @@ public class GUI extends JFrame {
 		btn_open_file.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				ctrl.initializeNewFile();		// Datei einlesen
+				updateProgress();
 			}
 		});
 		btn_open_file.setBounds(10, 11, 89, 23);
@@ -113,8 +123,8 @@ public class GUI extends JFrame {
 		/**
 		 * Spawn Start Button
 		 */
-		btn_start = new JButton("Start");
-		btn_start.addActionListener(new ActionListener() {
+		btn_startstop = new JButton("Start / Stop");
+		btn_startstop.addActionListener(new ActionListener() {
 			public MyThread startThread;
 			public void actionPerformed(ActionEvent arg0) {
 				if(isRunning == false){
@@ -152,8 +162,8 @@ public class GUI extends JFrame {
 				}
 			}
 		});
-		btn_start.setBounds(208, 11, 89, 23);
-		contentPane.add(btn_start);
+		btn_startstop.setBounds(208, 11, 120, 23);
+		contentPane.add(btn_startstop);
 		
 		/**
 		 * Spawn Help Button
@@ -181,7 +191,7 @@ public class GUI extends JFrame {
 		 *  Spawn Source Code Table
 		 */
 		scrollPane_source_code = new JScrollPane();
-		scrollPane_source_code.setBounds(10, 310, 540, 121);
+		scrollPane_source_code.setBounds(220, 306, 540, 121);
 		contentPane.add(scrollPane_source_code);
 		
 		table_source_code_temp = new JTable(tempData, columnNames);
@@ -208,7 +218,7 @@ public class GUI extends JFrame {
 		 * Spawn Special Register Table
 		 */
 		JScrollPane scrollPane_special_register = new JScrollPane();
-		scrollPane_special_register.setBounds(220, 45, 128, 250);
+		scrollPane_special_register.setBounds(636, 45, 128, 250);
 		contentPane.add(scrollPane_special_register);
 		
 		table_special_register = new JTable(model_special_register);
@@ -218,7 +228,7 @@ public class GUI extends JFrame {
 		 * Spawn PinA Table
 		 */
 		scrollPane_pinsA = new JScrollPane();
-		scrollPane_pinsA.setBounds(358, 46, 228, 55);
+		scrollPane_pinsA.setBounds(220, 45, 228, 55);
 		contentPane.add(scrollPane_pinsA);
 		
 		table_pinsA = new JTable(model_pinsA){
@@ -251,7 +261,7 @@ public class GUI extends JFrame {
 		 */
 		
 		scrollPane_pinsB = new JScrollPane();
-		scrollPane_pinsB.setBounds(358, 112, 228, 55);
+		scrollPane_pinsB.setBounds(220, 111, 228, 55);
 		contentPane.add(scrollPane_pinsB);
 		
 		table_pinsB = new JTable(model_pinsB){
@@ -280,16 +290,88 @@ public class GUI extends JFrame {
 		scrollPane_pinsB.setViewportView(table_pinsB);
 		
 		/**
-		 * Spawn Program Time Label
+		 * Spawn Status Label
 		 */
 		
-		lbl_ProgramTime = new JLabel("0 us");
-		lbl_ProgramTime.setBounds(10, 458, 89, 14);
-		contentPane.add(lbl_ProgramTime);
+		JPanel panelStatus = new JPanel();
+		panelStatus.setBounds(10, 306, 200, 168);
+		contentPane.add(panelStatus);
+		panelStatus.setLayout(null);
 		
+		JLabel lblTxtW = new JLabel("W");
+		lblTxtW.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblTxtW.setBounds(10, 10, 50, 15);
+		panelStatus.add(lblTxtW);
 		
+		JLabel lblTxtPC = new JLabel("PC");
+		lblTxtPC.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblTxtPC.setBounds(10, 25, 50, 15);
+		panelStatus.add(lblTxtPC);
+		
+		JLabel lblTxtZ = new JLabel("Z");
+		lblTxtZ.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblTxtZ.setBounds(10, 40, 50, 15);
+		panelStatus.add(lblTxtZ);
+		
+		JLabel lblTxtC = new JLabel("C");
+		lblTxtC.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblTxtC.setBounds(10, 55, 50, 15);
+		panelStatus.add(lblTxtC);
+		
+		JLabel lblTxtDC = new JLabel("DC");
+		lblTxtDC.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblTxtDC.setBounds(10, 70, 50, 15);
+		panelStatus.add(lblTxtDC);
+		
+		JLabel lblTxtStackptr = new JLabel("StackPtr");
+		lblTxtStackptr.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblTxtStackptr.setBounds(10, 85, 50, 15);
+		panelStatus.add(lblTxtStackptr);
+		
+		JLabel lblTxtTime = new JLabel("Time");
+		lblTxtTime.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblTxtTime.setBounds(10, 100, 50, 15);
+		panelStatus.add(lblTxtTime);
+		
+		lblW = new JLabel("0");
+		lblW.setBounds(80, 10, 100, 15);
+		panelStatus.add(lblW);
+		
+		lblPC = new JLabel("0");
+		lblPC.setBounds(80, 25, 100, 15);
+		panelStatus.add(lblPC);
+		
+		lblZ = new JLabel("false");
+		lblZ.setBounds(80, 40, 100, 15);
+		panelStatus.add(lblZ);
+		
+		lblC = new JLabel("false");
+		lblC.setBounds(80, 55, 100, 15);
+		panelStatus.add(lblC);
+		
+		lblDC = new JLabel("false");
+		lblDC.setBounds(80, 70, 100, 15);
+		panelStatus.add(lblDC);
+		
+		lblStackPtr = new JLabel("0");
+		lblStackPtr.setBounds(80, 85, 100, 15);
+		panelStatus.add(lblStackPtr);
+		
+		lblTime = new JLabel("0 us");
+		lblTime.setBounds(80, 100, 100, 15);
+		panelStatus.add(lblTime);
 
 		
+	}
+	
+	public static synchronized GUI getInstance () {
+		if (GUI.instance == null) {
+			GUI.instance = new GUI ();
+			instance.sto = storage.getInstance();
+			instance.log = logic.getInstance();
+			instance.ctrl = control.getInstance();
+	    }
+	    return GUI.instance;
 	}
 
 	public void updateProgress(){
@@ -299,7 +381,7 @@ public class GUI extends JFrame {
 				updateSpecialRegister();
 				updatePinsA();
 				updatePinsB();
-				updateProgramTime();
+				updatePanelStatus();
 				ctrl.selectRow();
 			}
 		});
@@ -336,13 +418,19 @@ public class GUI extends JFrame {
 		
 	}
 	
-	void updateProgramTime() {
-		lbl_ProgramTime.setText(sto.getTime() + " us");
+	void updatePanelStatus() {
+		lblW.setText(Integer.toHexString(sto.getW()));
+		lblPC.setText(Integer.toHexString(sto.getPC()));
+		lblZ.setText(Boolean.toString(sto.getZ()));
+		lblC.setText(Boolean.toString(sto.getC()));
+		lblDC.setText(Boolean.toString(sto.getDC()));
+		lblStackPtr.setText(Integer.toHexString(sto.getStackPtr()));
+		lblTime.setText(sto.getTime() + " us");
 	}
 	
 	void initializeSpecialRegister() { 
 		 
-		 model_special_register.addColumn("RegName");
+		 model_special_register.addColumn("Stack");
 		 model_special_register.addColumn("Value");
 		 
 		 updateSpecialRegister();
@@ -352,11 +440,6 @@ public class GUI extends JFrame {
 		model_special_register.getDataVector().removeAllElements();
 		model_special_register.fireTableDataChanged(); // notifies the JTable that the model has changed
 
-		model_special_register.addRow(new Object[]{"W", Integer.toHexString(sto.getW())});
-		model_special_register.addRow(new Object[]{"PC", Integer.toHexString(sto.getPC())});
-		model_special_register.addRow(new Object[]{"C", Boolean.toString(sto.getC())});
-		model_special_register.addRow(new Object[]{"Z", Boolean.toString(sto.getZ())});
-		
 		for(int i = 0; i < 8; i++) {
 			model_special_register.addRow(new Object[]{"Stack" + i, Integer.toHexString(sto.getStack(i))});
 		}
