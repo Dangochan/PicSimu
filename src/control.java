@@ -105,8 +105,6 @@ public class control
 		fc.showOpenDialog(null);
 		File file = fc.getSelectedFile();
 		sto.initializeStorage();
-		System.out.println("pc = " + sto.getPC());
-		//TODO prüfen, ob neues file geladen werden kann
 		linecounter = 0; //Zählt Zeilen mit Programmcode
 		try 
 		{
@@ -200,7 +198,7 @@ public class control
 	}
 
 	private void checkAssemblyLenght() {
-		if(linecounter <= (1024))
+		if(linecounter <= (sto.getDataStorage().length))
 		{
 			/**
 			 * Programmspeicher löschen

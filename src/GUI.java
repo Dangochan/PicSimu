@@ -40,6 +40,8 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
+//TODO tris register i/o anzeigen  (pins durch klick nur bei i invertierbar????)
+
 
 public class GUI extends JFrame {
 
@@ -80,6 +82,7 @@ public class GUI extends JFrame {
 	private JScrollPane scrollPane_pinsA;
 	private JTable table_pinsB;
 	private JScrollPane scrollPane_pinsB;
+	private JButton btnReset;
 
 	/**
 	 * Create the frame.
@@ -360,6 +363,25 @@ public class GUI extends JFrame {
 		lblTime = new JLabel("0 us");
 		lblTime.setBounds(80, 100, 100, 15);
 		panelStatus.add(lblTime);
+		
+		JButton btnButton = new JButton("Button");
+		btnButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+			}
+		});
+		btnButton.setBounds(450, 226, 89, 23);
+		contentPane.add(btnButton);
+		
+		btnReset = new JButton("Reset");
+		btnReset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sto.initializeStorage();
+				updateProgress();
+			}
+		});
+		btnReset.setBounds(338, 11, 89, 23);
+		contentPane.add(btnReset);
 
 		
 	}
@@ -440,6 +462,8 @@ public class GUI extends JFrame {
 		model_special_register.getDataVector().removeAllElements();
 		model_special_register.fireTableDataChanged(); // notifies the JTable that the model has changed
 
+		model_special_register.addRow(new Object[]{"Tmr0", Integer.toHexString(sto.getDataStorage(0x1))});
+		model_special_register.addRow(new Object[]{"PreSCount", Integer.toHexString(sto.prescaleCount)});
 		for(int i = 0; i < 8; i++) {
 			model_special_register.addRow(new Object[]{"Stack" + i, Integer.toHexString(sto.getStack(i))});
 		}

@@ -1,12 +1,8 @@
 public class storage {
 	
 	private static storage instance;
-	//private logic log;
 
-	//private GUI gui;
-	//private control ctrl;
-
-	private int[] progStorage = new int[1024]; // Array für 14 bit Programmspeicher
+	private int[] progStorage = new int[8192]; // Array für 14 bit Programmspeicher
 	private int[] dataStorage = new int[256]; // Array für 8 bit Datenspeicher
 	private int pc = 0;
 	private int[] stack = new int[8];
@@ -14,22 +10,45 @@ public class storage {
 	private int w = 0;
 	private double time = 0;
 	private double deltatime = 1;
+	//TODO einstelbarte frequenz
 	//zeit = 4/quarzfreq
 	
+	/*
+	 * Interrupt
+	 */
+	boolean interruptOccured = false;
+	int prescaleCount = 1;
+	
 	private storage() {
+		for(int i = 0; i < progStorage.length; i++) {
+			progStorage[i] = 0;
+		}
 		initializeStorage();
 	}
 
 	public void initializeStorage() {
 		/*
-		 * initalizing storage
+		 * Programmcounter und Stackpointer zurücksetzen
 		 */
-		pc = 0;
+		setPC(0);
 		stackptr = 0;
-		//TODO Herr Lehmann fragen: werden den TrisReg zurückgesetzt? Wird Status zurückgesetzt? eigentlich nicht
-		//dataStorage[0x3] = 0x18;
+		/*
+		 * Special Function Register initialisieren
+		 */
+		dataStorage[0x2] = 0x00;
+		dataStorage[0x3] = 0x18 | (dataStorage[0x3]&0B111);
+		dataStorage[0xA] = 0x00;
+		dataStorage[0xB] = 0x00 | (dataStorage[0xB]&0B1);
+		
+		dataStorage[0x81] = 0xFF;
+		dataStorage[0x82] = 0x00;
+		dataStorage[0x83] = 0x18 | (dataStorage[0x83]&0B111);
 		dataStorage[0x85] = 0xFF;
 		dataStorage[0x86] = 0xFF;
+		dataStorage[0x88] = 0x00 | (dataStorage[0x88]&0B1000);
+		dataStorage[0x8A] = 0x00;
+		dataStorage[0x8B] = 0x00 | (dataStorage[0x8B]&0B1);;
+		
 	}
 
 	
@@ -37,18 +56,9 @@ public class storage {
 	public static synchronized storage getInstance() {
 		if (storage.instance == null) {
 			storage.instance = new storage();
-			//instance.log = logic.getInstance();
 		}
 		return storage.instance;
 	}
-
-	/*public void setGUI(GUI aGUI) {
-		gui = aGUI;
-	}
-
-	public void setCTRL(control aCTRL) {
-		ctrl = aCTRL;
-	}*/
 
 	/**
 	 * Writermethode
@@ -61,11 +71,19 @@ public class storage {
 				dataStorage[getDataStorage(0x04)] = value;
 				break;
 			case 0x01:// TMR0
-
+				if(getRP0() == 0) {
+					dataStorage[destination] = value;
+				} else {
+					dataStorage[destination | (1 << 7)] = value;
+				}
+				if(getPSA() == 0) { //wenn Prescaler für Timer aktiv und TMR0 beschrieben wir
+					prescaleCount = getPrescale();//muss Prescale zurückgesetzt werden.
+				}
 				break;
 			case 0x02:// PCL - Programmzähler
 				dataStorage[destination] = value;
 				dataStorage[destination | (1 << 7)] = value;
+				pc = (pc&0xFF00) | value;
 				break;
 			case 0x03:// STATUS
 				dataStorage[destination] = value;
@@ -93,10 +111,10 @@ public class storage {
 			case 0x0A:// PCLATH
 				dataStorage[destination] = value;
 				dataStorage[destination | (1 << 7)] = value;
-				
 				break;
 			case 0x0B:// INTCON
-
+				dataStorage[destination] = value;
+				dataStorage[destination | (1 << 7)] = value;
 				break;
 			default:
 				break;
@@ -177,6 +195,9 @@ public class storage {
 	public int getDataStorage(int i) {
 		return dataStorage[i];
 	}
+	public int[] getDataStorage() {
+		return dataStorage;
+	}
 
 	public int getPc() {
 		return pc;
@@ -212,7 +233,7 @@ public class storage {
 
 	public void setPc(int pc) {
 		this.pc = pc;
-		writeStorage(0x02, pc & 0xFF);
+		writeStorage(0x02, pc & 0xFF);//PCL
 	}
 
 	public void setStack(int[] stack) {
@@ -344,5 +365,95 @@ public class storage {
 	
 	void incTime() {
 		time += deltatime;
+		checkInterrupt();
+		incTimerInterrupt();
+	}
+	
+	/*
+	 * Interrupts
+	 */
+	void checkInterrupt() {
+		//testen ob interrupts an sind
+		//testen ob timer erhoht werden muss
+		//testen ob timer overflow vorhanden				->interrupt boolean setzen
+		//testen ob externes interrupt registriert wurde	->interrupt boolean setzen	->muss in logic.step geprüft und behandelt werden
+		interruptOccured = false;
+		if(getGIE()!= 0) {
+			//TODO was ist eeie-bit???
+			if(getT0IE() != 0 && getT0IF() != 0) {
+				interruptOccured = true;
+			}
+			if(getINTE() != 0) {
+				interruptOccured = true;
+			}
+		}
+	}
+	
+	private void incTimerInterrupt() {
+		if(getT0CS() == 0) {
+			if(getPSA() == 0) {
+				if(prescaleCount != 0) {
+					prescaleCount--;
+				} else {
+					prescaleCount = getPrescale();
+					dataStorage[0x01]++;
+					if (dataStorage[0x01] > 255) {
+						dataStorage[0x01] = dataStorage[0x01] &0xFF;
+						setT0IF(true);
+					}
+				}	
+			} else {
+				dataStorage[0x01]++;
+				if (dataStorage[0x01] > 255) {
+					parseToByte(dataStorage[0x01]);
+					setT0IF(true);
+				}
+			}
+		}
+	}
+    
+    /*
+     * Interrupt Getter und Setter
+     */
+	public int getGIE() {
+		return ((dataStorage[0x0B] & 0x80) >> 7);
+	}   
+    
+	public int getT0IE() {
+		return ((dataStorage[0x0B] & 0x20) >> 5);
+	}   
+	
+	public int getT0IF() {
+		return ((dataStorage[0x0B] & 0x04) >> 2);
+	} 
+	
+	public int getINTE() {
+		return ((dataStorage[0x0B] & 0x10) >> 4);
+	}
+	
+	public int getPSA() {
+		return ((dataStorage[0x81] & 0x08) >> 3);
+	}
+	
+	public int getT0CS() {
+		return ((dataStorage[0x81] & 0x20) >> 5);
+	}
+	
+	
+	public boolean getInterruptOccured(){
+		return interruptOccured;
+	}
+	
+	private int getPrescale() {
+		return (int)Math.pow(2,(dataStorage[0x81] & 0B111)+1);//Prescaler aus drei bit errechnen
+	}
+	
+	public void setT0IF(boolean T0IF) {
+		if(T0IF==true) {
+			writeStorage(0X0B, (getDataStorage(0X0B)|0B100));
+		}
+		else {
+			writeStorage(0X0B, (getDataStorage(0X0B) & 0B11111011));
+		}
 	}
 }

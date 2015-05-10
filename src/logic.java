@@ -27,6 +27,9 @@ public class logic
 		executeCommand();
 		
 		gui.updateProgress();
+		if(sto.interruptOccured==true){
+		System.out.println("INTERRUPT!!!!!!!");
+		}
 		System.out.println("PC " + sto.getPc());
 	}
 	
@@ -495,7 +498,6 @@ public class logic
 		boolean tempZ = sto.getZ();
 		sto.setW(extractF());
 		sto.setPc(sto.popStack());
-		//TODO aus popstack auch pclath schreiben. wird pcl geschrieben?
 		sto.setZ(tempZ);
 		//Standardanweisungen
 		sto.incTime();
@@ -504,7 +506,6 @@ public class logic
 	
 	void commandRETURN() {
 		sto.setPc(sto.popStack());
-		//TODO aus popstack auch pclath schreiben. wird pcl geschrieben?
 		//Standardanweisungen
 		sto.incTime();
 		sto.incTime();		
