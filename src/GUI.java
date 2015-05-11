@@ -40,6 +40,8 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;
+import javax.swing.border.BevelBorder;
+import javax.swing.DefaultComboBoxModel;
 
 //TODO tris register i/o anzeigen  (pins durch klick nur bei i invertierbar????)
 
@@ -87,6 +89,8 @@ public class GUI extends JFrame {
 	private JScrollPane scrollPane_pinsB;
 	private JButton btnReset;
 	private JTextField textFieldFrequenz;
+	private JButton btnExternalClock;
+	private JTextField textField;
 
 	/**
 	 * Create the frame.
@@ -274,6 +278,7 @@ public class GUI extends JFrame {
 		 */
 		
 		JPanel panelStatus = new JPanel();
+		panelStatus.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		panelStatus.setBounds(10, 306, 200, 168);
 		contentPane.add(panelStatus);
 		panelStatus.setLayout(null);
@@ -372,6 +377,40 @@ public class GUI extends JFrame {
 		lblDeltaTime.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblDeltaTime.setBounds(65, 505, 46, 14);
 		contentPane.add(lblDeltaTime);
+		
+		JPanel panelExternClock = new JPanel();
+		panelExternClock.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		panelExternClock.setBounds(458, 45, 142, 121);
+		contentPane.add(panelExternClock);
+		panelExternClock.setLayout(null);
+		
+		btnExternalClock = new JButton("Externer Takt");
+		btnExternalClock.setBounds(10, 11, 118, 23);
+		panelExternClock.add(btnExternalClock);
+		
+		JLabel lblFreqkhz = new JLabel("Freq. [Khz]");
+		lblFreqkhz.setBounds(10, 45, 69, 14);
+		panelExternClock.add(lblFreqkhz);
+		
+		textField = new JTextField();
+		textField.setText("1000");
+		textField.setBounds(72, 42, 56, 20);
+		panelExternClock.add(textField);
+		textField.setColumns(10);
+		
+		JComboBox comboBox = new JComboBox();
+		comboBox.setModel(new DefaultComboBoxModel(new String[] {"RA0", "RA1", "RA2", "RA3", "RA4", "RA5", "RA6", "RA7"}));
+		comboBox.setBounds(10, 70, 118, 20);
+		panelExternClock.add(comboBox);
+		
+		JLabel lblStopped = new JLabel("Stopped");
+		lblStopped.setBounds(10, 96, 118, 14);
+		panelExternClock.add(lblStopped);
+		btnExternalClock.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sto.setClockIsRunning(!sto.getClockIsRunning());
+			}
+		});
 
 		
 	}

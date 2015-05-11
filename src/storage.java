@@ -1,7 +1,7 @@
 public class storage {
 	
 	private static storage instance;
-
+	//TODO welches Helpfile? o.O
 	private int[] progStorage = new int[8192]; // Array für 14 bit Programmspeicher
 	private int[] dataStorage = new int[256]; // Array für 8 bit Datenspeicher
 	private int pc = 0;
@@ -10,6 +10,10 @@ public class storage {
 	private int w = 0;
 	private double time = 0;
 	private double deltatime = 1;
+	private int konstDelta = 25;
+	private double externalClock = 1000; //alle x usec wird der externe clock ausgelöst
+	private double externalClockCount;
+	private boolean clockIsRunning = false;
 	/*
 	 * Interrupt
 	 */
@@ -180,6 +184,9 @@ public class storage {
 		return dataStorage[0x03];
 	}
 
+	double getExternClock() {
+		return externalClock;
+	}
 	/**
 	 * Getters Bit
 	 */
@@ -211,7 +218,7 @@ public class storage {
 	}
 	
 	public int getWait() {
-		return (int)(25 * deltatime);
+		return (int)(konstDelta * deltatime);
 	}
 	
 	public double getTime() {
@@ -224,6 +231,10 @@ public class storage {
 	
 	public double getFreq() {
 		return 4/deltatime;
+	}
+	
+	public int getKonstDelta() {
+		return konstDelta;
 	}
 	
 	/**
@@ -392,20 +403,35 @@ public class storage {
 		}
 	}
 	
+	
+	
+	
 	void incTime() {
 		time += deltatime;
+		checkExternClock();
 		checkIntTimer();
 		checkInterrupt();
+	}
+	
+	/*
+	 * ExternClock
+	 */
+	
+	void checkExternClock () {
+		if(clockIsRunning) {
+			if(externalClockCount >= 0) {
+				externalClockCount -= deltatime;
+			} else {
+				externalClockCount = externalClock;
+				changePortBit(0,0);
+			}
+		}
 	}
 	
 	/*
 	 * Interrupts
 	 */
 	void checkInterrupt() {
-		//testen ob interrupts an sind
-		//testen ob timer erhoht werden muss
-		//testen ob timer overflow vorhanden				->interrupt boolean setzen
-		//testen ob externes interrupt registriert wurde	->interrupt boolean setzen	->muss in logic.step geprüft und behandelt werden
 		interruptOccured = false;
 		if(getGIE()!= 0) {
 			System.out.println("T0IE: " + getT0IE() + ". T0IF: " + getT0IF());
@@ -566,5 +592,13 @@ public class storage {
 		} else {
 			writeStorage(0X0B, (getDataStorage(0X0B) & 0B11111101));
 		}
+	}
+
+	public boolean getClockIsRunning() {
+		return clockIsRunning;
+	}
+
+	public void setClockIsRunning(boolean clockIsRunning) {
+		this.clockIsRunning = clockIsRunning;
 	}
 }
