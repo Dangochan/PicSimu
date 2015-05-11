@@ -66,9 +66,14 @@ public class control
 			{
 				try 
 				{
+					/**
+					 * state den Thread
+					 */
+					startThread = MyThread.getInstance();
+					startThread.start();
+					
 					GUI gui = GUI.getInstance();
 					gui.setVisible(true);
-					startThread = new MyThread();
 					gui.initializeStorage();
 					gui.initializeSpecialRegister();
 					gui.initializePinsARegister();
@@ -100,7 +105,7 @@ public class control
 	}
 	
 	public void initializeNewFile()
-	{
+	{//TODO neues file laden (immer noch das alte geladen? )
 		JFileChooser fc = new JFileChooser();
 		fc.showOpenDialog(null);
 		File file = fc.getSelectedFile();

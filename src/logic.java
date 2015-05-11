@@ -27,9 +27,6 @@ public class logic
 		executeCommand();
 		
 		gui.updateProgress();
-		if(sto.interruptOccured==true){
-		System.out.println("INTERRUPT!!!!!!!");
-		}
 		System.out.println("PC " + sto.getPc());
 	}
 	
@@ -46,6 +43,7 @@ public class logic
 				System.out.println("Clear Watchdog Timer");
 				break;
 			case 0B00000000001001://Return from interrupt
+				commandRETFIE();
 				System.out.println("Return from interrupt");
 				break;	
 			case 0B00000000001000://Return from Subroutine	
@@ -493,6 +491,14 @@ public class logic
 	/*
 	 * RETFIE
 	 */
+	
+	void commandRETFIE() {
+		sto.setPc(sto.popStack());
+		sto.setGIE(true);
+		//Standardanweisungen
+		sto.incTime();
+		sto.incTime();
+	}	
 	
 	void commandRETLW() {
 		boolean tempZ = sto.getZ();

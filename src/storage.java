@@ -10,9 +10,6 @@ public class storage {
 	private int w = 0;
 	private double time = 0;
 	private double deltatime = 1;
-	//TODO einstelbarte frequenz
-	//zeit = 4/quarzfreq
-	
 	/*
 	 * Interrupt
 	 */
@@ -94,7 +91,9 @@ public class storage {
 				dataStorage[destination | (1 << 7)] = value;
 				break;
 			case 0x05:// PORTA
+				checkExtTimer((value&0x10)>> 4);//noch steht der alte Wert an PortA, dadurch vergleich möglich
 				writePort(destination, value);
+				
 				break;
 			case 0x06:// PORTB
 				writePort(destination, value);
@@ -212,11 +211,19 @@ public class storage {
 	}
 	
 	public int getWait() {
-		return (int)(100 * deltatime);
+		return (int)(25 * deltatime);
 	}
 	
 	public double getTime() {
 		return time;
+	}
+	
+	public double getDeltatime() {
+		return deltatime;
+	}
+	
+	public double getFreq() {
+		return 4/deltatime;
 	}
 	
 	/**
@@ -309,6 +316,13 @@ public class storage {
 		writeStorage(0x0A, value);
 	}
 
+	void setDeltatime(double value) {
+		deltatime = value;
+	}
+	
+	void setFreq(double value) {
+		deltatime = 4/value;
+	}
 	/**
 	 * Other methods
 	 */
@@ -345,12 +359,27 @@ public class storage {
 	
 	public void changePortBit(int port, int bit){
 		int mask = 0b1 << bit;
-		if ((mask & dataStorage[port+5]) != 0){
-			dataStorage[port+5]= dataStorage[port+5]&(mask^0xff);
-		}
-		else{
-			dataStorage[port+5] = dataStorage[port+5]|(mask);
-		}
+		if((dataStorage[(port+5)|0x80] & mask) != 0) {
+			boolean tempZ = getZ();
+			
+			if ((mask & dataStorage[port+5]) != 0){
+				System.out.println("change port bit: bit löschen");
+				//writeStorage(port+5, getDataStorage(port+5)&(mask^0xff));
+				checkExtTimer(        ((dataStorage[0x05]&0x10)>> 4)^0x1           );//invertierte Wert übergeben, da bit gerade invertiert wurde
+				checkExtInterrupt(((dataStorage[0x06]&0x1))^0x1);
+				checkRBInterrupt(port, bit);
+				dataStorage[port+5]= dataStorage[port+5]&(mask^0xff);
+			}
+			else{
+				//writeStorage(port+5, getDataStorage(port+5)|(mask));
+				System.out.println("change port bit: bit Setzen");
+				checkExtTimer(((dataStorage[0x05]&0x10)>> 4)^0x1);//invertierte Wert übergeben, da bit gerade invertiert wurde
+				checkExtInterrupt(((dataStorage[0x06]&0x1))^0x1);
+				checkRBInterrupt(port, bit);
+				dataStorage[port+5] = dataStorage[port+5]|(mask);
+			}
+			setZ(tempZ);
+		}	
 	}
 	
 	public int readPortBit(int port, int bit){
@@ -365,8 +394,8 @@ public class storage {
 	
 	void incTime() {
 		time += deltatime;
+		checkIntTimer();
 		checkInterrupt();
-		incTimerInterrupt();
 	}
 	
 	/*
@@ -379,45 +408,89 @@ public class storage {
 		//testen ob externes interrupt registriert wurde	->interrupt boolean setzen	->muss in logic.step geprüft und behandelt werden
 		interruptOccured = false;
 		if(getGIE()!= 0) {
-			//TODO was ist eeie-bit???
+			System.out.println("T0IE: " + getT0IE() + ". T0IF: " + getT0IF());
 			if(getT0IE() != 0 && getT0IF() != 0) {
 				interruptOccured = true;
 			}
-			if(getINTE() != 0) {
+			if(getINTF() != 0) {
 				interruptOccured = true;
+			}
+			if(getRBIF() != 0) {
+				interruptOccured = true;
+			}
+		}
+		if(interruptOccured) {
+			pushStack(getPc() + 1);
+			setPc(0x4);
+			setGIE(false);
+		}
+	}
+	
+	void checkIntTimer() {
+		if(getT0CS() == 0) {
+			incPrescalerAndTimerInterrupt();
+		}
+	}
+	
+	void checkExtTimer(int newRA4) {
+		if((getT0CS() == 1) && (newRA4 != ((getDataStorage(5)&0x10)>>4) )) {//externer Timer gewählt und RA4 hat sich geändert?
+			System.out.println("T0SE: " + getT0SE());
+			if((newRA4 == 0 && getT0SE() == 1) || ((newRA4 == 1 && getT0SE() == 0))) {//fallende flanke und RA4 jetzt0 oder steigende flanke und RA4 jetzt 1?
+				incPrescalerAndTimerInterrupt();// wenn ja wird TMR0 Interrupt routine ausgelöst
 			}
 		}
 	}
 	
-	private void incTimerInterrupt() {
-		if(getT0CS() == 0) {
+	private void incPrescalerAndTimerInterrupt() {
+		
 			if(getPSA() == 0) {
 				if(prescaleCount != 0) {
 					prescaleCount--;
 				} else {
-					prescaleCount = getPrescale();
-					dataStorage[0x01]++;
-					if (dataStorage[0x01] > 255) {
-						dataStorage[0x01] = dataStorage[0x01] &0xFF;
-						setT0IF(true);
-					}
+					prescaleCount = getPrescale()-1;
+					incTimerInterrupt();
 				}	
 			} else {
-				dataStorage[0x01]++;
-				if (dataStorage[0x01] > 255) {
-					parseToByte(dataStorage[0x01]);
-					setT0IF(true);
-				}
+				incTimerInterrupt();
+			}
+		
+	}
+
+	public void incTimerInterrupt() {
+		dataStorage[0x01]++;
+		if (dataStorage[0x01] > 255) {
+			dataStorage[0x01] = dataStorage[0x01] &0xFF;
+			setT0IF(true);
+		}
+	}
+	
+	void checkExtInterrupt(int newRB0) {
+		if((getINTE() != 0) && (newRB0 != (getDataStorage(6)&0x01)) ) {//externes Interrupt aktiviert und RB0 hat sich geändert?
+			if((newRB0 == 0 && getINTEDG() == 0) || ((newRB0 == 1 && getINTEDG() == 1))) {//fallende flanke und RB0 jetzt 0 oder steigende flanke und RB0 jetzt 1?
+				setINTF(true);// wenn ja wird RBIE Interrupt routine ausgelöst
 			}
 		}
 	}
-    
+	void checkRBInterrupt(int port, int bit) {
+		if((getRBIE() != 0) && (port == 1) && (bit >= 5)) {
+			setRBIF(true);
+		}
+	}
+	
     /*
      * Interrupt Getter und Setter
      */
 	public int getGIE() {
 		return ((dataStorage[0x0B] & 0x80) >> 7);
-	}   
+	}
+	
+	public int getINTF() {
+		return ((dataStorage[0x0B] & 0x2) >> 1);
+	}
+	
+	public int getRBIF() {
+		return (dataStorage[0x0B] & 0x01);
+	}
     
 	public int getT0IE() {
 		return ((dataStorage[0x0B] & 0x20) >> 5);
@@ -431,6 +504,11 @@ public class storage {
 		return ((dataStorage[0x0B] & 0x10) >> 4);
 	}
 	
+	
+	public int getRBIE() {
+		return ((dataStorage[0x0B] & 0x08) >> 3);
+	}
+	
 	public int getPSA() {
 		return ((dataStorage[0x81] & 0x08) >> 3);
 	}
@@ -439,6 +517,13 @@ public class storage {
 		return ((dataStorage[0x81] & 0x20) >> 5);
 	}
 	
+	public int getT0SE() {
+		return ((dataStorage[0x81] & 0x10) >> 4);
+	}
+	
+	public int getINTEDG() {
+		return ((dataStorage[0x81] & 0x40) >> 6);
+	}
 	
 	public boolean getInterruptOccured(){
 		return interruptOccured;
@@ -451,9 +536,35 @@ public class storage {
 	public void setT0IF(boolean T0IF) {
 		if(T0IF==true) {
 			writeStorage(0X0B, (getDataStorage(0X0B)|0B100));
-		}
-		else {
+		} else {
 			writeStorage(0X0B, (getDataStorage(0X0B) & 0B11111011));
+		}
+	}
+	
+	public void setGIE(boolean GIE) {
+		if(GIE==true) {
+			writeStorage(0X0B, (getDataStorage(0X0B)|0x80));
+		} else {
+			writeStorage(0X0B, (getDataStorage(0X0B) & 0x7F));
+		}
+	}
+	
+	
+	
+	
+	public void setRBIF(boolean RBIF) {
+		if(RBIF==true) {
+			writeStorage(0X0B, (getDataStorage(0X0B)|0x01));
+		} else {
+			writeStorage(0X0B, (getDataStorage(0X0B) & 0B11111110));
+		}
+	}
+	
+	public void setINTF(boolean INTF) {
+		if(INTF==true) {
+			writeStorage(0X0B, (getDataStorage(0X0B)|0x02));
+		} else {
+			writeStorage(0X0B, (getDataStorage(0X0B) & 0B11111101));
 		}
 	}
 }

@@ -39,19 +39,22 @@ import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import javax.swing.JTextField;
 
 //TODO tris register i/o anzeigen  (pins durch klick nur bei i invertierbar????)
 
 
 public class GUI extends JFrame {
-
+	//TODO gui idiotensicher machen
+	//TODO Zeile umfärben statt nur markieren
+	
 	private static GUI instance;
 	private JPanel contentPane;
 
 	public control ctrl;
 	private storage sto;
 	private logic log;
-	
+	private MyThread startThread;
 	
 	public JTable table_source_code_temp;
 	public JScrollPane scrollPane_source_code;
@@ -64,6 +67,7 @@ public class GUI extends JFrame {
 	public JLabel lblDC;
 	public JLabel lblStackPtr;
 	public JLabel lblTime;
+	public JLabel lblDeltaTime;
 	
 	DefaultTableModel model_storage = new DefaultTableModel(); 
 	DefaultTableModel model_special_register = new DefaultTableModel(); 
@@ -71,7 +75,6 @@ public class GUI extends JFrame {
 	DefaultTableModel model_pinsA = new DefaultTableModel();
 	DefaultTableModel model_pinsB = new DefaultTableModel();
 	
-	public boolean isRunning = false;
 	public String[] columnNames = {"BP","Program"};	
 	public Object[][] tempData = new Object[1][2];
 	
@@ -83,16 +86,19 @@ public class GUI extends JFrame {
 	private JTable table_pinsB;
 	private JScrollPane scrollPane_pinsB;
 	private JButton btnReset;
+	private JTextField textFieldFrequenz;
 
 	/**
 	 * Create the frame.
 	 */
 	private GUI() {
+		
+		
 		/**
 		 * Spawn Layout
 		 */
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 867, 537);
+		setBounds(100, 100, 927, 563);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -128,41 +134,12 @@ public class GUI extends JFrame {
 		 */
 		btn_startstop = new JButton("Start / Stop");
 		btn_startstop.addActionListener(new ActionListener() {
-			public MyThread startThread;
+			
 			public void actionPerformed(ActionEvent arg0) {
-				if(isRunning == false){
-					isRunning = true;
-					startThread = new MyThread(){
-						public void run(){
-							while(! isInterrupted()){
-								
-								try{
-									log.step(); //damit nach BP die Zeile "übersprungen" wird
-									ctrl.selectRow();
-						            Boolean check = (Boolean)ctrl.table_source_code.getModel().getValueAt(ctrl.aktuelleZeile,0); //Breakpoint gesetzt?
-									if (!Boolean.TRUE.equals(check)){ 
-										log.executeCommand();
-										updateProgress();
-										System.out.println("PC " + sto.getPc());
-										Thread.sleep(sto.getWait());
-									}
-									else{
-										interrupt();
-										isRunning = false;
-									}
-								}
-								catch(InterruptedException e){
-									interrupt();
-								}
-							}
-						}
-					};
-					startThread.start();
+				if(!startThread.isRunning) {
+					log.step(); //damit nach BP die Zeile "übersprungen" wird
 				}
-				else{
-					isRunning = false;
-					startThread.interrupt();
-				}
+				startThread.isRunning = !startThread.isRunning;
 			}
 		});
 		btn_startstop.setBounds(208, 11, 120, 23);
@@ -194,7 +171,7 @@ public class GUI extends JFrame {
 		 *  Spawn Source Code Table
 		 */
 		scrollPane_source_code = new JScrollPane();
-		scrollPane_source_code.setBounds(220, 306, 540, 121);
+		scrollPane_source_code.setBounds(220, 177, 540, 342);
 		contentPane.add(scrollPane_source_code);
 		
 		table_source_code_temp = new JTable(tempData, columnNames);
@@ -221,7 +198,7 @@ public class GUI extends JFrame {
 		 * Spawn Special Register Table
 		 */
 		JScrollPane scrollPane_special_register = new JScrollPane();
-		scrollPane_special_register.setBounds(636, 45, 128, 250);
+		scrollPane_special_register.setBounds(773, 45, 128, 250);
 		contentPane.add(scrollPane_special_register);
 		
 		table_special_register = new JTable(model_special_register);
@@ -364,14 +341,15 @@ public class GUI extends JFrame {
 		lblTime.setBounds(80, 100, 100, 15);
 		panelStatus.add(lblTime);
 		
-		JButton btnButton = new JButton("Button");
-		btnButton.addActionListener(new ActionListener() {
+		JButton btnSetFreq = new JButton("Set Freq.");
+		btnSetFreq.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+				sto.setFreq(Double.parseDouble(textFieldFrequenz.getText()));
+				updateFrequenz();
 			}
 		});
-		btnButton.setBounds(450, 226, 89, 23);
-		contentPane.add(btnButton);
+		btnSetFreq.setBounds(121, 476, 89, 23);
+		contentPane.add(btnSetFreq);
 		
 		btnReset = new JButton("Reset");
 		btnReset.addActionListener(new ActionListener() {
@@ -382,6 +360,18 @@ public class GUI extends JFrame {
 		});
 		btnReset.setBounds(338, 11, 89, 23);
 		contentPane.add(btnReset);
+		
+		textFieldFrequenz = new JTextField();
+		textFieldFrequenz.setHorizontalAlignment(SwingConstants.RIGHT);
+		textFieldFrequenz.setText("4.0");
+		textFieldFrequenz.setBounds(10, 477, 101, 22);
+		contentPane.add(textFieldFrequenz);
+		textFieldFrequenz.setColumns(10);
+		
+		lblDeltaTime = new JLabel("1 us");
+		lblDeltaTime.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblDeltaTime.setBounds(65, 505, 46, 14);
+		contentPane.add(lblDeltaTime);
 
 		
 	}
@@ -392,6 +382,7 @@ public class GUI extends JFrame {
 			instance.sto = storage.getInstance();
 			instance.log = logic.getInstance();
 			instance.ctrl = control.getInstance();
+			instance.startThread = MyThread.getInstance();
 	    }
 	    return GUI.instance;
 	}
@@ -404,11 +395,16 @@ public class GUI extends JFrame {
 				updatePinsA();
 				updatePinsB();
 				updatePanelStatus();
+				updateFrequenz();
 				ctrl.selectRow();
 			}
 		});
 	}
 
+	void updateFrequenz() {
+		textFieldFrequenz.setText(Double.toString(sto.getFreq()));
+		lblDeltaTime.setText(Double.toString(sto.getDeltatime()) +" us");
+	}
 	
 	void initializeStorage() {
 		 model_storage.addColumn(""); 
@@ -541,10 +537,48 @@ public class GUI extends JFrame {
 }
 
 class MyThread extends Thread {
+	private static MyThread instance;
+
+	public boolean isRunning = false;
+	
 	public GUI gui;
-	private logic log = logic.getInstance();
+	private logic log;
+	private control ctrl;
+	private storage sto;
+	Boolean _check;
+	MyThread() {
+	}
+	public static synchronized MyThread getInstance () {
+		if (MyThread.instance == null) {
+			MyThread.instance = new MyThread();
+			instance.sto = storage.getInstance();
+			instance.log = logic.getInstance();
+			instance.ctrl = control.getInstance();
+			instance.gui = GUI.getInstance();
+		}
+	    return MyThread.instance;
+	}
+	
 	@Override
 	public void run(){
-		
+		while(true) {
+			if(isRunning){
+				ctrl.selectRow();
+				_check = (Boolean)ctrl.table_source_code.getModel().getValueAt(ctrl.aktuelleZeile,0); //Breakpoint gesetzt?
+				if (!Boolean.TRUE.equals(_check)){ 
+					log.executeCommand();
+					gui.updateProgress();
+					System.out.println(_check);
+					System.out.println("PC " + sto.getPc());
+				} else {
+					isRunning = false;
+				}
+			}
+			try {
+				Thread.sleep(sto.getWait());
+			} catch(InterruptedException e){
+				//do nothing
+			}		
+		}
 	}
 }
