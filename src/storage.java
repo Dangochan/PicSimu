@@ -12,8 +12,11 @@ public class storage {
 	private double deltatime = 1;
 	private int konstDelta = 25;
 	private double externalClock = 1000; //alle x usec wird der externe clock ausgelöst
+	//externe frequenz ist 1/externalClock(10)^-6
 	private double externalClockCount;
 	private boolean clockIsRunning = false;
+	private int externPin;
+	private int externPort;
 	/*
 	 * Interrupt
 	 */
@@ -240,6 +243,21 @@ public class storage {
 	/**
 	 * Setters
 	 */
+	
+	public void setExternPin(int pin) {
+		externPin = pin;
+	}
+	
+	public void setExternPort(int port) {
+		externPort = port;
+	}
+	
+	public void setExternalFreq(double freq) {
+		freq = freq * 1000; // Khz zu Hz
+		System.out.println("Freq" + freq);
+		externalClock = 1/(freq * Math.pow((double)10,(double)(-6)));
+		System.out.println("external clock" + externalClock);
+	}
 
 	public void setProgStorage(int destination, int value) {
 		this.progStorage[destination] = value;
@@ -423,7 +441,7 @@ public class storage {
 				externalClockCount -= deltatime;
 			} else {
 				externalClockCount = externalClock;
-				changePortBit(0,0);
+				changePortBit(externPort,externPin);
 			}
 		}
 	}

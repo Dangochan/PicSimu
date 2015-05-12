@@ -49,7 +49,7 @@ import javax.swing.DefaultComboBoxModel;
 public class GUI extends JFrame {
 	//TODO gui idiotensicher machen
 	//TODO Zeile umfärben statt nur markieren
-	
+	//TODO zahlenausgaben auf zwei nachkommastellen runden
 	private static GUI instance;
 	private JPanel contentPane;
 
@@ -70,6 +70,7 @@ public class GUI extends JFrame {
 	public JLabel lblStackPtr;
 	public JLabel lblTime;
 	public JLabel lblDeltaTime;
+	public JLabel lblStopped;
 	
 	DefaultTableModel model_storage = new DefaultTableModel(); 
 	DefaultTableModel model_special_register = new DefaultTableModel(); 
@@ -387,30 +388,96 @@ public class GUI extends JFrame {
 		btnExternalClock = new JButton("Externer Takt");
 		btnExternalClock.setBounds(10, 11, 118, 23);
 		panelExternClock.add(btnExternalClock);
+		btnExternalClock.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sto.setExternalFreq(Double.parseDouble(textField.getText()));
+				sto.setClockIsRunning(!sto.getClockIsRunning());
+				if(sto.getClockIsRunning()){
+					lblStopped.setText("Running");
+				} else {
+					lblStopped.setText("Stopped");
+				}
+				
+			}
+		});
 		
 		JLabel lblFreqkhz = new JLabel("Freq. [Khz]");
 		lblFreqkhz.setBounds(10, 45, 69, 14);
 		panelExternClock.add(lblFreqkhz);
 		
 		textField = new JTextField();
-		textField.setText("1000");
+		textField.setText("1.000");
 		textField.setBounds(72, 42, 56, 20);
 		panelExternClock.add(textField);
 		textField.setColumns(10);
 		
 		JComboBox comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"RA0", "RA1", "RA2", "RA3", "RA4", "RA5", "RA6", "RA7"}));
+		comboBox.setModel(new DefaultComboBoxModel(new String[] {"RA0", "RA1", "RA2", "RA3", "RA4", "RA5", "RA6", "RA7", "RB0", "RB1", "RB2", "RB3", "RB4", "RB5", "RB6", "RB7"}));
 		comboBox.setBounds(10, 70, 118, 20);
 		panelExternClock.add(comboBox);
-		
-		JLabel lblStopped = new JLabel("Stopped");
-		lblStopped.setBounds(10, 96, 118, 14);
-		panelExternClock.add(lblStopped);
-		btnExternalClock.addActionListener(new ActionListener() {
+		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				sto.setClockIsRunning(!sto.getClockIsRunning());
+				JComboBox cb = (JComboBox)e.getSource();
+		        String pin = (String)cb.getSelectedItem();
+		        switch(pin) {
+		        case "RA0":sto.setExternPin(0);
+		        			sto.setExternPort(0);
+		        	break;
+		        case "RA1":sto.setExternPin(1);
+							sto.setExternPort(0);
+	        	break;
+		        case "RA2":sto.setExternPin(2);
+							sto.setExternPort(0);
+	        	break;
+		        case "RA3":sto.setExternPin(3);
+							sto.setExternPort(0);
+	        	break;
+		        case "RA4":sto.setExternPin(4);
+							sto.setExternPort(0);
+	        	break;
+		        case "RA5":sto.setExternPin(5);
+							sto.setExternPort(0);
+	        	break;
+		        case "RA6":sto.setExternPin(6);
+							sto.setExternPort(0);
+	        	break;
+		        case "RA7":sto.setExternPin(7);
+							sto.setExternPort(0);
+	        	break;
+		        case "RB0":	sto.setExternPin(0);
+		        			sto.setExternPort(1);
+	        	break;
+		        case "RB1":sto.setExternPin(1);
+		        			sto.setExternPort(1);
+	        	break;
+		        case "RB2":sto.setExternPin(2);
+		        			sto.setExternPort(1);
+	        	break;
+		        case "RB3":sto.setExternPin(3);
+		        			sto.setExternPort(1);
+	        	break;
+		        case "RB4":sto.setExternPin(4);
+		        			sto.setExternPort(1);
+	        	break;
+		        case "RB5":sto.setExternPin(5);
+		        			sto.setExternPort(1);
+	        	break;
+		        case "RB6":sto.setExternPin(6);
+		        			sto.setExternPort(1);
+	        	break;
+		        case "RB7":sto.setExternPin(7);
+		        			sto.setExternPort(1);
+	        	break;
+	        	default:sto.setExternPin(0);
+		        }
 			}
 		});
+		
+		
+		lblStopped = new JLabel("Stopped");
+		lblStopped.setBounds(10, 96, 118, 14);
+		panelExternClock.add(lblStopped);
+		
 
 		
 	}
