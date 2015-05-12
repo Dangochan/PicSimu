@@ -288,8 +288,8 @@ class HardwareThread implements Runnable{				//Thread für Hardwareansteuerung
 				Hardwareconnection.sendData();
 				ArrayList<Integer> answer = Hardwareconnection.readData();
 		       System.out.println("Gelesene Daten: " + answer);
-				sto.writeStorage(5,answer.get(0));
-				sto.writeStorage(6,answer.get(1));
+				sto.dataStorage[5] = answer.get(0);
+				sto.dataStorage[6] = answer.get(1);
 				System.out.println("PortB" + sto.readPortBit(1, 0));
 				gui.updatePinsA();
 				gui.updatePinsB();
@@ -302,7 +302,7 @@ class HardwareThread implements Runnable{				//Thread für Hardwareansteuerung
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 
-					//System.out.println("Fehler!!");
+					System.out.println("Fehler!!");
 			}
 			
 	        
