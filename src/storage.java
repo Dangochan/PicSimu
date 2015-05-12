@@ -2,21 +2,23 @@ public class storage {
 	
 	private static storage instance;
 	//TODO welches Helpfile? o.O
-	private int[] progStorage = new int[8192]; // Array für 14 bit Programmspeicher
-	private int[] dataStorage = new int[256]; // Array für 8 bit Datenspeicher
-	private int pc = 0;
-	private int[] stack = new int[8];
-	private int stackptr = 0;
-	private int w = 0;
-	private double time = 0;
-	private double deltatime = 1;
-	private int konstDelta = 25;
-	private double externalClock = 1000; //alle x usec wird der externe clock ausgelöst
+	 int[] progStorage = new int[8192]; // Array für 14 bit Programmspeicher
+	 int[] dataStorage = new int[256]; // Array für 8 bit Datenspeicher
+	 int pc = 0;
+	 int[] stack = new int[8];
+	 int stackptr = 0;
+	 int w = 0;
+	 double time = 0;
+	 double deltatime = 1;
+	 int konstDelta = 25;
+	 double externalClock = 1000; //alle x usec wird der externe clock ausgelöst
 	//externe frequenz ist 1/externalClock(10)^-6
-	private double externalClockCount;
-	private boolean clockIsRunning = false;
-	private int externPin;
-	private int externPort;
+	 double externalClockCount;
+	 boolean clockIsRunning = false;
+	 int externPin;
+	 int externPort;
+	 //TODO Formatieren
+	 //TODO in/out für portA portB anzeigen
 	/*
 	 * Interrupt
 	 */
@@ -385,6 +387,7 @@ public class storage {
 			dataStorage[destination] = value & (mask);
 		}
 	}	
+	
 	
 	public void changePortBit(int port, int bit){
 		int mask = 0b1 << bit;

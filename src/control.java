@@ -10,10 +10,10 @@ import javax.swing.JTable;
 import javax.swing.JFileChooser;
 import javax.swing.table.TableColumn;
 
+
 public class control
 {
 	private static control instance;
-	
 	private storage sto = storage.getInstance();
 	private logic log = logic.getInstance();
 	private GUI gui;
@@ -106,6 +106,22 @@ public class control
 	
 	public void initializeNewFile()
 	{//TODO neues file laden (immer noch das alte geladen? )
+		
+		
+		boolean success = Hardwareconnection.initiate("COM2");
+		
+		Thread hardware = new Thread(new HardwareThread());
+		hardware.start();
+		
+		if (success == true) {									//Feedback, ob Verbindungsaufbau erfolgreich war
+			System.out.println("Erfolg!!!");
+		} else {
+			System.out.println("Kein Erfolg");
+		}	
+		
+		
+		
+		
 		JFileChooser fc = new JFileChooser();
 		fc.showOpenDialog(null);
 		File file = fc.getSelectedFile();
@@ -252,4 +268,47 @@ public class control
 	}
 	
 
+}
+
+
+class HardwareThread implements Runnable{				//Thread für Hardwareansteuerung
+	storage sto = storage.getInstance();
+	GUI gui = GUI.getInstance();
+	@Override public void run()
+	{
+		//Elementhandlers.myRegister.setTrisA(0xff);
+		//Elementhandlers.myRegister.setTrisB(0xff);
+		
+		
+		while(true){
+		
+			try {
+				//logic.Hardwareansteuerung.sendRS232();
+				//logic.Hardwareansteuerung.read();
+				Hardwareconnection.sendData();
+				ArrayList<Integer> answer = Hardwareconnection.readData();
+		       System.out.println("Gelesene Daten: " + answer);
+				sto.writeStorage(5,answer.get(0));
+				sto.writeStorage(6,answer.get(1));
+				System.out.println("PortB" + sto.readPortBit(1, 0));
+				gui.updatePinsA();
+				gui.updatePinsB();
+			    //Elementhandlers.myRegister.setPortA(answer.get(0));
+			    //Elementhandlers.myRegister.setPortB(answer.get(1));
+			     //Elementhandlers.updateTableA();
+			     //Elementhandlers.updateTableB();
+			       Thread.sleep(500);
+			     
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+
+					//System.out.println("Fehler!!");
+			}
+			
+	        
+		}
+		
+	}
+
+	
 }

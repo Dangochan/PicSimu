@@ -2,7 +2,8 @@
 public class logic
 {
 	private static logic instance;
-	
+
+	private StepStack stepStack;
 	private storage sto;
 	private GUI gui;
 	
@@ -19,6 +20,7 @@ public class logic
 			logic.instance = new logic ();
 			instance.sto = storage.getInstance();
 			instance.gui = GUI.getInstance();
+			instance.stepStack = StepStack.getInstance();
 	    }
 	    return logic.instance;
 	}
@@ -32,7 +34,7 @@ public class logic
 	
 	public void executeCommand()
 	{
-		
+		stepStack.pushStack(new Step());
 		//Integer, für Programmcode
 		//0000 0000  0000 0000  0000 0000  0000 0000
 		

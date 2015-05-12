@@ -36,6 +36,7 @@ import javax.swing.SwingUtilities;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -57,6 +58,7 @@ public class GUI extends JFrame {
 	private storage sto;
 	private logic log;
 	private MyThread startThread;
+	private StepStack stepStack;
 	
 	public JTable table_source_code_temp;
 	public JScrollPane scrollPane_source_code;
@@ -70,7 +72,7 @@ public class GUI extends JFrame {
 	public JLabel lblStackPtr;
 	public JLabel lblTime;
 	public JLabel lblDeltaTime;
-	public JLabel lblStopped;
+	public JLabel lblexternStautus;
 	
 	DefaultTableModel model_storage = new DefaultTableModel(); 
 	DefaultTableModel model_special_register = new DefaultTableModel(); 
@@ -92,6 +94,7 @@ public class GUI extends JFrame {
 	private JTextField textFieldFrequenz;
 	private JButton btnExternalClock;
 	private JTextField textField;
+	 JButton btnUndo;
 
 	/**
 	 * Create the frame.
@@ -393,9 +396,9 @@ public class GUI extends JFrame {
 				sto.setExternalFreq(Double.parseDouble(textField.getText()));
 				sto.setClockIsRunning(!sto.getClockIsRunning());
 				if(sto.getClockIsRunning()){
-					lblStopped.setText("Running");
+					lblexternStautus.setText("Running");
 				} else {
-					lblStopped.setText("Stopped");
+					lblexternStautus.setText("Stopped");
 				}
 				
 			}
@@ -411,11 +414,11 @@ public class GUI extends JFrame {
 		panelExternClock.add(textField);
 		textField.setColumns(10);
 		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"RA0", "RA1", "RA2", "RA3", "RA4", "RA5", "RA6", "RA7", "RB0", "RB1", "RB2", "RB3", "RB4", "RB5", "RB6", "RB7"}));
-		comboBox.setBounds(10, 70, 118, 20);
-		panelExternClock.add(comboBox);
-		comboBox.addActionListener(new ActionListener() {
+		JComboBox comBoxExtClkSrc = new JComboBox();
+		comBoxExtClkSrc.setModel(new DefaultComboBoxModel(new String[] {"RA0", "RA1", "RA2", "RA3", "RA4", "RA5", "RA6", "RA7", "RB0", "RB1", "RB2", "RB3", "RB4", "RB5", "RB6", "RB7"}));
+		comBoxExtClkSrc.setBounds(10, 70, 118, 20);
+		panelExternClock.add(comBoxExtClkSrc);
+		comBoxExtClkSrc.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JComboBox cb = (JComboBox)e.getSource();
 		        String pin = (String)cb.getSelectedItem();
@@ -474,9 +477,40 @@ public class GUI extends JFrame {
 		});
 		
 		
-		lblStopped = new JLabel("Stopped");
-		lblStopped.setBounds(10, 96, 118, 14);
-		panelExternClock.add(lblStopped);
+		lblexternStautus = new JLabel("Stopped");
+		lblexternStautus.setBounds(10, 96, 118, 14);
+		panelExternClock.add(lblexternStautus);
+		
+		btnUndo = new JButton("Undo");
+		btnUndo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				Step step = stepStack.popStack();
+				if(step!=null) {
+				for(int i=0;i<256;i++){
+					sto.dataStorage[i] = step.dataStorage[i];
+					}
+					sto.pc = step.pc;
+					for(int i=0;i<8;i++){
+						sto.stack[i] = step.stack[i];
+					}
+					sto.stackptr = step.stackptr;
+					sto.w = step.w;
+					sto.time = step.time;
+					sto.deltatime = step.deltatime;
+					sto.konstDelta = step.konstDelta;
+					sto.externalClock = step.externalClock;
+					sto.externalClockCount = step.externalClockCount;
+					sto.clockIsRunning = step.clockIsRunning;
+					updateProgress();
+				} else {
+					btnUndo.setEnabled(false);
+				}
+			}
+		});
+		btnUndo.setBounds(437, 11, 89, 23);
+		btnUndo.setEnabled(false);
+		contentPane.add(btnUndo);
 		
 
 		
@@ -489,6 +523,7 @@ public class GUI extends JFrame {
 			instance.log = logic.getInstance();
 			instance.ctrl = control.getInstance();
 			instance.startThread = MyThread.getInstance();
+			instance.stepStack = StepStack.getInstance();
 	    }
 	    return GUI.instance;
 	}
