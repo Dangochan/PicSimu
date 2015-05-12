@@ -48,7 +48,6 @@ import javax.swing.DefaultComboBoxModel;
 
 
 public class GUI extends JFrame {
-	//TODO gui idiotensicher machen
 	//TODO Zeile umfärben statt nur markieren
 	//TODO zahlenausgaben auf zwei nachkommastellen runden
 	private static GUI instance;
@@ -85,6 +84,7 @@ public class GUI extends JFrame {
 	
 	private JTable table_storage;
 	private JTable table_special_register;
+	private JButton btn_step; 
 	private JButton btn_startstop;
 	private JTable table_pinsA;
 	private JScrollPane scrollPane_pinsA;
@@ -120,6 +120,8 @@ public class GUI extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				ctrl.initializeNewFile();		// Datei einlesen
 				updateProgress();
+				btn_step.setEnabled(true);
+				btn_startstop.setEnabled(true);
 			}
 		});
 		btn_open_file.setBounds(10, 11, 89, 23);
@@ -128,7 +130,8 @@ public class GUI extends JFrame {
 		/**
 		 * Spawn Step Button
 		 */
-		JButton btn_step = new JButton("Step");
+		btn_step = new JButton("Step");
+		btn_step.setEnabled(false);
 		btn_step.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				log.step();
@@ -141,6 +144,7 @@ public class GUI extends JFrame {
 		 * Spawn Start Button
 		 */
 		btn_startstop = new JButton("Start / Stop");
+		btn_startstop.setEnabled(false);
 		btn_startstop.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent arg0) {
