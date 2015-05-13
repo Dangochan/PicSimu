@@ -276,15 +276,8 @@ class HardwareThread implements Runnable{				//Thread für Hardwareansteuerung
 	GUI gui = GUI.getInstance();
 	@Override public void run()
 	{
-		//Elementhandlers.myRegister.setTrisA(0xff);
-		//Elementhandlers.myRegister.setTrisB(0xff);
-		
-		
-		while(true){
-		
+		while(true) {		
 			try {
-				//logic.Hardwareansteuerung.sendRS232();
-				//logic.Hardwareansteuerung.read();
 				Hardwareconnection.sendData();
 				ArrayList<Integer> answer = Hardwareconnection.readData();
 		       System.out.println("Gelesene Daten: " + answer);
@@ -293,22 +286,14 @@ class HardwareThread implements Runnable{				//Thread für Hardwareansteuerung
 				System.out.println("PortB" + sto.readPortBit(1, 0));
 				gui.updatePinsA();
 				gui.updatePinsB();
-			    //Elementhandlers.myRegister.setPortA(answer.get(0));
-			    //Elementhandlers.myRegister.setPortB(answer.get(1));
-			     //Elementhandlers.updateTableA();
-			     //Elementhandlers.updateTableB();
+				gui.lblComConnection.setText("true");
 			       Thread.sleep(500);
 			     
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
-
+					gui.lblComConnection.setText("false");
 					System.out.println("Fehler!!");
 			}
-			
-	        
-		}
-		
+		}	
 	}
-
-	
 }

@@ -50,6 +50,7 @@ import javax.swing.DefaultComboBoxModel;
 public class GUI extends JFrame {
 	//TODO Zeile umfärben statt nur markieren
 	//TODO zahlenausgaben auf zwei nachkommastellen runden
+	//TODO beim neulanden von files den stepStack zurücksetzen
 	private static GUI instance;
 	private JPanel contentPane;
 
@@ -72,6 +73,7 @@ public class GUI extends JFrame {
 	public JLabel lblTime;
 	public JLabel lblDeltaTime;
 	public JLabel lblexternStautus;
+	public JLabel lblTxtComConnection;
 	
 	DefaultTableModel model_storage = new DefaultTableModel(); 
 	DefaultTableModel model_special_register = new DefaultTableModel(); 
@@ -95,6 +97,8 @@ public class GUI extends JFrame {
 	private JButton btnExternalClock;
 	private JTextField textField;
 	 JButton btnUndo;
+	 private JLabel lblTxtTime;
+	 public JLabel lblComConnection;
 
 	/**
 	 * Create the frame.
@@ -106,7 +110,7 @@ public class GUI extends JFrame {
 		 * Spawn Layout
 		 */
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 927, 563);
+		setBounds(100, 100, 783, 563);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -176,7 +180,7 @@ public class GUI extends JFrame {
 				}
 			}
 		});
-		btn_help.setBounds(659, 11, 89, 23);
+		btn_help.setBounds(671, 11, 89, 23);
 		contentPane.add(btn_help);
 		
 		/**
@@ -210,7 +214,7 @@ public class GUI extends JFrame {
 		 * Spawn Special Register Table
 		 */
 		JScrollPane scrollPane_special_register = new JScrollPane();
-		scrollPane_special_register.setBounds(773, 45, 128, 250);
+		scrollPane_special_register.setBounds(610, 45, 150, 121);
 		contentPane.add(scrollPane_special_register);
 		
 		table_special_register = new JTable(model_special_register);
@@ -321,10 +325,10 @@ public class GUI extends JFrame {
 		lblTxtStackptr.setBounds(10, 85, 50, 15);
 		panelStatus.add(lblTxtStackptr);
 		
-		JLabel lblTxtTime = new JLabel("Time");
-		lblTxtTime.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblTxtTime.setBounds(10, 100, 50, 15);
-		panelStatus.add(lblTxtTime);
+		lblTxtComConnection = new JLabel("Com2");
+		lblTxtComConnection.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblTxtComConnection.setBounds(10, 100, 50, 15);
+		panelStatus.add(lblTxtComConnection);
 		
 		lblW = new JLabel("0");
 		lblW.setBounds(80, 10, 100, 15);
@@ -351,8 +355,17 @@ public class GUI extends JFrame {
 		panelStatus.add(lblStackPtr);
 		
 		lblTime = new JLabel("0 us");
-		lblTime.setBounds(80, 100, 100, 15);
+		lblTime.setBounds(80, 115, 100, 15);
 		panelStatus.add(lblTime);
+		
+		lblTxtTime = new JLabel("Time");
+		lblTxtTime.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblTxtTime.setBounds(10, 115, 50, 15);
+		panelStatus.add(lblTxtTime);
+		
+		lblComConnection = new JLabel("false");
+		lblComConnection.setBounds(80, 100, 100, 15);
+		panelStatus.add(lblComConnection);
 		
 		JButton btnSetFreq = new JButton("Set Freq.");
 		btnSetFreq.addActionListener(new ActionListener() {
@@ -377,13 +390,13 @@ public class GUI extends JFrame {
 		textFieldFrequenz = new JTextField();
 		textFieldFrequenz.setHorizontalAlignment(SwingConstants.RIGHT);
 		textFieldFrequenz.setText("4.0");
-		textFieldFrequenz.setBounds(10, 477, 101, 22);
+		textFieldFrequenz.setBounds(10, 477, 75, 22);
 		contentPane.add(textFieldFrequenz);
 		textFieldFrequenz.setColumns(10);
 		
 		lblDeltaTime = new JLabel("1 us");
 		lblDeltaTime.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblDeltaTime.setBounds(65, 505, 46, 14);
+		lblDeltaTime.setBounds(72, 505, 39, 18);
 		contentPane.add(lblDeltaTime);
 		
 		JPanel panelExternClock = new JPanel();
@@ -516,6 +529,11 @@ public class GUI extends JFrame {
 		btnUndo.setEnabled(false);
 		contentPane.add(btnUndo);
 		
+		JLabel lblMhz = new JLabel("MHz");
+		lblMhz.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblMhz.setBounds(72, 477, 39, 22);
+		contentPane.add(lblMhz);
+		
 
 		
 	}
@@ -603,8 +621,6 @@ public class GUI extends JFrame {
 		model_special_register.getDataVector().removeAllElements();
 		model_special_register.fireTableDataChanged(); // notifies the JTable that the model has changed
 
-		model_special_register.addRow(new Object[]{"Tmr0", Integer.toHexString(sto.getDataStorage(0x1))});
-		model_special_register.addRow(new Object[]{"PreSCount", Integer.toHexString(sto.prescaleCount)});
 		for(int i = 0; i < 8; i++) {
 			model_special_register.addRow(new Object[]{"Stack" + i, Integer.toHexString(sto.getStack(i))});
 		}
