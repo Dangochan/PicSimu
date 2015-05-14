@@ -1,4 +1,4 @@
-
+//TODO Programm2 zeile 002B Zero-Flag müsste gesetzt sein (erst kopieren dann rücksetzen)
 public class logic
 {
 	private static logic instance;

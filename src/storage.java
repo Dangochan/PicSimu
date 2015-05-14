@@ -1,5 +1,5 @@
 public class storage {
-	
+	//TODO interrupt-flag setzen bei rb0
 	private static storage instance;
 	 int[] progStorage = new int[8192]; // Array für 14 bit Programmspeicher
 	 int[] dataStorage = new int[256]; // Array für 8 bit Datenspeicher
