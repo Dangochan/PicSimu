@@ -1,7 +1,6 @@
 public class storage {
 	
 	private static storage instance;
-	//TODO welches Helpfile? o.O
 	 int[] progStorage = new int[8192]; // Array für 14 bit Programmspeicher
 	 int[] dataStorage = new int[256]; // Array für 8 bit Datenspeicher
 	 int pc = 0;
@@ -10,7 +9,7 @@ public class storage {
 	 int w = 0;
 	 double time = 0;
 	 double deltatime = 1;
-	 int konstDelta = 25;
+	 int konstDelta = 50;
 	 double externalClock = 1000; //alle x usec wird der externe clock ausgelöst
 	//externe frequenz ist 1/externalClock(10)^-6
 	 double externalClockCount;
@@ -18,7 +17,6 @@ public class storage {
 	 int externPin;
 	 int externPort;
 	 //TODO Formatieren
-	 //TODO in/out für portA portB anzeigen
 	/*
 	 * Interrupt
 	 */
@@ -57,6 +55,11 @@ public class storage {
 		
 	}
 
+	public void deleteProgramStorage() {
+		for(int i = 0; i < 8192; i++) {
+			progStorage[i] = 0;
+		}
+	}
 	
 
 	public static synchronized storage getInstance() {

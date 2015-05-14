@@ -1,15 +1,13 @@
-import com.sun.org.apache.bcel.internal.generic.StackConsumer;
-
-
-
 public class StepStack {
 	private static StepStack instance;
 	private GUI gui;
 	private Step[] steps;
 	private int size;
-	private int stepCounter = 0;
-	private int stackPointer = 0;
+	private int stepCounter;
+	private int stackPointer;
 	private StepStack(int size) {
+		stepCounter = 0;
+		stackPointer = 0;
 		steps = new Step[size];
 		this.size = size;
 	}
@@ -21,6 +19,10 @@ public class StepStack {
 	    return StepStack.instance;
 	}
 	
+	public void resetStepStack() {
+		stepCounter = 0;
+		stackPointer = 0;
+	}
 	
 	
 	public void pushStack(Step newStep) {

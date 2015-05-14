@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JFileChooser;
 import javax.swing.table.TableColumn;
@@ -15,7 +13,7 @@ public class control
 {
 	private static control instance;
 	private storage sto = storage.getInstance();
-	private logic log = logic.getInstance();
+	private StepStack stepStack = StepStack.getInstance();
 	private GUI gui;
 	/**
 	 * Variables
@@ -26,59 +24,37 @@ public class control
 	public ArrayList<String> arrayL = new ArrayList<String>(); //Dieses Array bildet den Programmspeicher des Pic ab.
 	public MyThread myThread;
 	public static MyThread startThread;
-	
-	public int getLinecounter() {
-		return linecounter;
-	}
+
 	public Object[][] data;
 	public JTable table_source_code;
 	public boolean[] isSourcecode;
 	public int aktuelleZeile =0;
 	
-	
 	private int linecounter;
+	public int getLinecounter() {
+		return linecounter;
+	}
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) 
-	{		
-		/**
-		 * Erzeugen des controllers
-		 */
-//		 final control ctrl = new control();
-		/**
-		 * Erzeugen des storage
-		 */
-//		 storage createsto = new storage();
-//		 ctrl.sto = createsto;
-		/**
-		* Erzeugen der Pic Logik
-		*/
-//		logic createlog = new logic();
-//		ctrl.log = createlog;
-//		ctrl.log.setStorage(ctrl.sto);
+	public static void main(String[] args) {		
 		/**
 		 * Erstellen der GUI 
 		 */
-		EventQueue.invokeLater(new Runnable() 
-		{
-			public void run() 
-			{
-				try 
-				{
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
 					/**
 					 * state den Thread
 					 */
 					startThread = MyThread.getInstance();
 					startThread.start();
-					
 					GUI gui = GUI.getInstance();
 					gui.setVisible(true);
 					gui.initializeStorage();
 					gui.initializeSpecialRegister();
 					gui.initializePinsARegister();
 					gui.initializePinsBRegister();
-					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -89,53 +65,46 @@ public class control
 	/**
 	 * Control Constructor
 	 */
-	private control ()
-	{
-		
-	}
+	private control () {}
 	
 	public static synchronized control getInstance () {
 		if (control.instance == null) {
 			control.instance = new control ();
 			instance.sto = storage.getInstance();
-			instance.log = logic.getInstance();
 			instance.gui = GUI.getInstance();
 	    }
 	    return control.instance;
 	}
 	
-	public void initializeNewFile()
-	{//TODO neues file laden (immer noch das alte geladen? )
-		
-		
+	public void initializeNewFile() {
+		/*
+		 * Hardwareconnection
+		 */
 		boolean success = Hardwareconnection.initiate("COM2");
-		
 		Thread hardware = new Thread(new HardwareThread());
 		hardware.start();
-		
 		if (success == true) {									//Feedback, ob Verbindungsaufbau erfolgreich war
 			System.out.println("Erfolg!!!");
 		} else {
 			System.out.println("Kein Erfolg");
 		}	
-		
-		
-		
-		
+		/*
+		 * File laden
+		 */
 		JFileChooser fc = new JFileChooser();
 		fc.showOpenDialog(null);
 		File file = fc.getSelectedFile();
 		sto.initializeStorage();
+		sto.deleteProgramStorage();
+		arrayL.clear();
 		linecounter = 0; //Zählt Zeilen mit Programmcode
-		try 
-		{
+		try {
 			BufferedReader in = new BufferedReader(new FileReader(file));
 			readFileInArray(in);
 			countProgramLines(in);
 			in.close();
 			writeSourceCodeArray();
-		} catch (IOException e) 
-		{
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		createSourceCodeTable();
@@ -143,8 +112,7 @@ public class control
 		 * Prüfen, ob Assemblercode zu lange für den Programmspeicher des u-Controllers
 		 */
 		checkAssemblyLenght();
-		
-		
+		stepStack.resetStepStack();
 	}
 
 	private void createSourceCodeTable() {
@@ -153,8 +121,7 @@ public class control
 		 */
 		data = new Object[arrayL.size()][2];
 		
-		for (int i=0; i < arrayL.size(); i++)
-		{
+		for (int i=0; i < arrayL.size(); i++) {
 			data[i][1]= arrayL.get(i);
 		}
 		
@@ -179,7 +146,6 @@ public class control
 			}
 		};
 		gui.scrollPane_source_code.setViewportView(table_source_code);
-		
 		//Spaltenbreite von table_sourcecode setzen
 		table_source_code.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		TableColumn col_bp = table_source_code.getColumnModel().getColumn(0);
@@ -207,12 +173,10 @@ public class control
 
 	private void writeSourceCodeArray() {
 		isSourcecode = new boolean[arrayL.size()];
-		for (int i = 0; i < arrayL.size();i++)
-		{
-			if (arrayL.get(i).charAt(0) != ' '){
+		for (int i = 0; i < arrayL.size();i++) {
+			if (arrayL.get(i).charAt(0) != ' ') {
 				isSourcecode[i] = true;
-			}
-			else{
+			} else {
 				isSourcecode[i] = false;
 			}
 		}
@@ -224,8 +188,9 @@ public class control
 			/**
 			 * Programmspeicher löschen
 			 */
-			for(int i = 0; i < (1024); i++)
+			for(int i = 0; i < (1024); i++) {
 				sto.setProgStorage(i,0);
+			}
 			/**
 			 * Einlesen des Programms
 			 */
@@ -240,8 +205,7 @@ public class control
 			}
 			isLoad = true; //Angeben, dass ein Programm geladen wurde.
 		}
-		else
-		{
+		else {
 			gui.showError(1); //
 		}
 	}
@@ -250,49 +214,45 @@ public class control
 	/**
 	 * Zeile zum Markieren auswählen
 	 */
-	public void selectRow(){
+	public void selectRow() {
 		int sc_pc = 0;
 		aktuelleZeile = 0;
 		//durchläuft isSourcecode
-		for (int i = 0; i<arrayL.size();i++)
-		{
-			if(isSourcecode[i]==true)
+		for (int i = 0; i<arrayL.size();i++) {
+			if(isSourcecode[i]==true) {
 				sc_pc++;
-			if (sc_pc == sto.getPC()+1)
-			{
+			}
+			if (sc_pc == sto.getPC()+1) {
 				aktuelleZeile = i;
 				break;
 			}
 		}
 		table_source_code.changeSelection(aktuelleZeile, 1, false, false);
 	}
-	
-
 }
 
 
-class HardwareThread implements Runnable{				//Thread für Hardwareansteuerung
+class HardwareThread implements Runnable {				//Thread für Hardwareansteuerung
 	storage sto = storage.getInstance();
 	GUI gui = GUI.getInstance();
-	@Override public void run()
-	{
-		while(true) {		
+	@Override 
+	public void run() {
+		while(true) { 		
 			try {
 				Hardwareconnection.sendData();
 				ArrayList<Integer> answer = Hardwareconnection.readData();
-		       System.out.println("Gelesene Daten: " + answer);
 				sto.dataStorage[5] = answer.get(0);
 				sto.dataStorage[6] = answer.get(1);
-				System.out.println("PortB" + sto.readPortBit(1, 0));
 				gui.updatePinsA();
 				gui.updatePinsB();
-				gui.lblComConnection.setText("true");
-			       Thread.sleep(500);
-			     
+				gui.lblComConnection.setText("true");			     
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
 					gui.lblComConnection.setText("false");
-					System.out.println("Fehler!!");
+			}
+			try {
+				Thread.sleep(500);
+			} catch (Exception e) {
+				//Do nothing
 			}
 		}	
 	}

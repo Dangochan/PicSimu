@@ -48,9 +48,11 @@ import javax.swing.DefaultComboBoxModel;
 
 
 public class GUI extends JFrame {
+	//TODO button new file sperren wenn prog läuft
 	//TODO Zeile umfärben statt nur markieren
 	//TODO zahlenausgaben auf zwei nachkommastellen runden
 	//TODO beim neulanden von files den stepStack zurücksetzen
+	//TODO Reset ->Undo deaktivieren (Stepstack löschen)
 	private static GUI instance;
 	private JPanel contentPane;
 
@@ -170,7 +172,6 @@ public class GUI extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				String current = System.getProperty("user.dir");
 				try{
 					Desktop.getDesktop().open(new File (current + "/help.pdf"));
