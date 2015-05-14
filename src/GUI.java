@@ -44,11 +44,9 @@ import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
 import javax.swing.DefaultComboBoxModel;
 
-//TODO tris register i/o anzeigen  (pins durch klick nur bei i invertierbar????)
 
 
 public class GUI extends JFrame {
-	//TODO button new file sperren wenn prog läuft
 	//TODO Zeile umfärben statt nur markieren
 	//TODO zahlenausgaben auf zwei nachkommastellen runden
 	//TODO beim neulanden von files den stepStack zurücksetzen
@@ -64,7 +62,14 @@ public class GUI extends JFrame {
 	
 	public JTable table_source_code_temp;
 	public JScrollPane scrollPane_source_code;
+	private JTable table_storage;
 	public JScrollPane scrollPane_storage;
+	private JTable table_special_register;
+	private JScrollPane scrollPane_special_register;
+	private JTable table_pinsA;
+	private JScrollPane scrollPane_pinsA;
+	private JTable table_pinsB;
+	private JScrollPane scrollPane_pinsB;
 	
 	public JLabel lblW;
 	public JLabel lblPC;
@@ -76,6 +81,8 @@ public class GUI extends JFrame {
 	public JLabel lblDeltaTime;
 	public JLabel lblexternStautus;
 	public JLabel lblTxtComConnection;
+	public JLabel lblTxtTime;
+	public JLabel lblComConnection;
 	
 	DefaultTableModel model_storage = new DefaultTableModel(); 
 	DefaultTableModel model_special_register = new DefaultTableModel(); 
@@ -85,22 +92,16 @@ public class GUI extends JFrame {
 	
 	public String[] columnNames = {"BP","Program"};	
 	public Object[][] tempData = new Object[1][2];
+	private String[] inOut = new String[8];
 	
-	private JTable table_storage;
-	private JTable table_special_register;
 	private JButton btn_step; 
 	private JButton btn_startstop;
-	private JTable table_pinsA;
-	private JScrollPane scrollPane_pinsA;
-	private JTable table_pinsB;
-	private JScrollPane scrollPane_pinsB;
 	private JButton btnReset;
-	private JTextField textFieldFrequenz;
 	private JButton btnExternalClock;
+	private JButton btn_open_file;
+	public JButton btnUndo;
+	private JTextField textFieldFrequenz;
 	private JTextField textField;
-	 JButton btnUndo;
-	 private JLabel lblTxtTime;
-	 public JLabel lblComConnection;
 
 	/**
 	 * Create the frame.
@@ -121,7 +122,7 @@ public class GUI extends JFrame {
 		/**
 		 * Spawn Load File Button
  		 */
-		JButton btn_open_file = new JButton("Open File");
+		btn_open_file = new JButton("Open File");
 		btn_open_file.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				ctrl.initializeNewFile();		// Datei einlesen
@@ -156,6 +157,9 @@ public class GUI extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				if(!startThread.isRunning) {
 					log.step(); //damit nach BP die Zeile "übersprungen" wird
+					btn_open_file.setEnabled(false);
+				} else {
+					btn_open_file.setEnabled(true);
 				}
 				startThread.isRunning = !startThread.isRunning;
 			}
@@ -214,7 +218,7 @@ public class GUI extends JFrame {
 		/**
 		 * Spawn Special Register Table
 		 */
-		JScrollPane scrollPane_special_register = new JScrollPane();
+		scrollPane_special_register = new JScrollPane();
 		scrollPane_special_register.setBounds(610, 45, 150, 121);
 		contentPane.add(scrollPane_special_register);
 		
@@ -644,8 +648,15 @@ public class GUI extends JFrame {
 	void updatePinsA(){
 		model_pinsA.getDataVector().removeAllElements();
 		model_pinsA.fireTableDataChanged();
-		
-		model_pinsA.addRow(new Object[]{"Tris","i","i","i","i","i","i","i","i"});
+	// input/output abfragenn
+		for (int i = 0; i < 8; i++) {
+			if (sto.readTrisBit(0, i) != 0) {
+				inOut[i] = "i";
+			} else {
+				inOut[i] = "o";
+			}
+		}
+		model_pinsA.addRow(new Object[]{"Tris",inOut[7],inOut[6],inOut[5],inOut[4],inOut[3],inOut[2],inOut[1],inOut[0]});
 		model_pinsA.addRow(new Object[]{"Pin",
 				sto.readPortBit(0, 7), sto.readPortBit(0, 6),
 				sto.readPortBit(0, 5), sto.readPortBit(0, 4),
@@ -670,8 +681,15 @@ public class GUI extends JFrame {
 	void updatePinsB(){
 		model_pinsB.getDataVector().removeAllElements();
 		model_pinsB.fireTableDataChanged();
-		
-		model_pinsB.addRow(new Object[]{"Tris","i","i","i","i","i","i","i","i"});
+			
+		for (int i = 0; i < 8; i++) {
+			if (sto.readTrisBit(1, i) != 0) {
+				inOut[i] = "i";
+			} else {
+				inOut[i] = "o";
+			}
+		}
+		model_pinsB.addRow(new Object[]{"Tris",inOut[7],inOut[6],inOut[5],inOut[4],inOut[3],inOut[2],inOut[1],inOut[0]});
 		model_pinsB.addRow(new Object[]{"Pin",
 				sto.readPortBit(1, 7), sto.readPortBit(1, 6),
 				sto.readPortBit(1, 5), sto.readPortBit(1, 4),

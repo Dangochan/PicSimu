@@ -419,7 +419,7 @@ public class storage {
 	
 	public int readPortBit(int port, int bit){
 		int mask = 0b1 << bit;
-		if((mask & dataStorage[port+5]) != 0){
+		if((mask & dataStorage[port+0x5]) != 0){
 			return 1;
 		}
 		else{
@@ -427,6 +427,15 @@ public class storage {
 		}
 	}
 	
+	public int readTrisBit(int port, int bit){
+		int mask = 0b1 << bit;
+		if((mask & dataStorage[port+0x85]) != 0){
+			return 1;
+		}
+		else{
+			return 0;
+		}
+	}
 	
 	
 	
