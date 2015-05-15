@@ -471,7 +471,7 @@ public class storage {
 			if(getT0IE() != 0 && getT0IF() != 0) {
 				interruptOccured = true;
 			}
-			if(getINTF() != 0) {
+			if((getINTE() != 0) && (getINTF() != 0)) { //TODO  nach hier kopiert
 				interruptOccured = true;
 			}
 			if(getRBIF() != 0) {
@@ -524,7 +524,8 @@ public class storage {
 	}
 	
 	void checkExtInterrupt(int newRB0) {
-		if((getINTE() != 0) && (newRB0 != (getDataStorage(6)&0x01)) ) {//externes Interrupt aktiviert und RB0 hat sich geändert?
+		//TODO von hier kopiert
+		if(newRB0 != (getDataStorage(6)&0x01) ) {//externes Interrupt aktiviert und RB0 hat sich geändert?
 			if((newRB0 == 0 && getINTEDG() == 0) || ((newRB0 == 1 && getINTEDG() == 1))) {//fallende flanke und RB0 jetzt 0 oder steigende flanke und RB0 jetzt 1?
 				setINTF(true);// wenn ja wird RBIE Interrupt routine ausgelöst
 			}

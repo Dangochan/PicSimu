@@ -455,11 +455,15 @@ public class logic
 	}
 	
 	void commandMOVF() {
-		sto.setZ(false);
+		int ergebnis = sto.getDataStorage(checkZeroF(extractF()));
+		//sto.setZ(false);
 		if(extractD() == 0) {
-			sto.setW(sto.getDataStorage(checkZeroF(extractF())));
+			sto.setW(ergebnis);
 		} else {
-			sto.writeStorage(checkZeroF(extractF()), sto.getDataStorage(checkZeroF(extractF())));
+			sto.writeStorage(checkZeroF(extractF()), ergebnis);
+		}
+		if(ergebnis != 0) {
+			sto.setZ(false);
 		}
 		//Standardanweisungen
 		increasePC();
