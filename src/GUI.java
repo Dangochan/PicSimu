@@ -99,7 +99,7 @@ public class GUI extends JFrame {
 	private JButton btn_startstop;
 	private JButton btnReset;
 	private JButton btnExternalClock;
-	private JButton btn_open_file;
+	public JButton btn_open_file;
 	public JButton btnUndo;
 	private JTextField textFieldFrequenz;
 	private JTextField textField;
@@ -233,20 +233,7 @@ public class GUI extends JFrame {
 		scrollPane_pinsA.setBounds(220, 45, 228, 55);
 		contentPane.add(scrollPane_pinsA);
 		
-		table_pinsA = new JTable(model_pinsA){
-			@Override	
-			public boolean isCellEditable(int row, int column){
-				if (row ==0){
-					return false;
-				}
-				else {
-					switch (column){
-					case 1: case 2: case 3: case 4: case 5: case 6: case 7: return true;
-					default: return false;
-					}
-				}
-			}
-		};
+		table_pinsA = new JTable(model_pinsA);
 		table_pinsA.addMouseListener(new MouseAdapter() {
 			//@Override
 			public void mouseClicked(MouseEvent e){
@@ -266,20 +253,7 @@ public class GUI extends JFrame {
 		scrollPane_pinsB.setBounds(220, 111, 228, 55);
 		contentPane.add(scrollPane_pinsB);
 		
-		table_pinsB = new JTable(model_pinsB){
-			@Override	
-			public boolean isCellEditable(int row, int column){
-				if (row ==0){
-					return false;
-				}
-				else {
-					switch (column){
-					case 1: case 2: case 3: case 4: case 5: case 6: case 7: return true;
-					default: return false;
-					}
-				}
-			}
-		};
+		table_pinsB = new JTable(model_pinsB);
 		table_pinsB.addMouseListener(new MouseAdapter() {
 			//@Override
 			public void mouseClicked(MouseEvent e){
@@ -753,12 +727,14 @@ class MyThread extends Thread {
 					System.out.println("PC " + sto.getPc());
 				} else {
 					isRunning = false;
+					gui.btn_open_file.setEnabled(true);
 				}
 			}
 			try {
 				Thread.sleep(sto.getWait());
 			} catch(InterruptedException e){
 				//do nothing
+				gui.btn_open_file.setEnabled(true);
 			}		
 		}
 	}
