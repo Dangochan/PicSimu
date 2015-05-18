@@ -233,13 +233,9 @@ public class GUI extends JFrame {
 		scrollPane_pinsA.setBounds(220, 45, 228, 55);
 		contentPane.add(scrollPane_pinsA);
 		
-		table_pinsA = new JTable(model_pinsA){
-			@Override
-			public boolean isCellEditable(int row, int column){
-				return false;
-			}
-		};
+		table_pinsA = new JTable(model_pinsA);
 		table_pinsA.addMouseListener(new MouseAdapter() {
+			//@Override
 			public void mouseClicked(MouseEvent e){
 				int col = 8-table_pinsA.columnAtPoint(e.getPoint());
 				sto.changePortBit(0, col);
@@ -257,12 +253,7 @@ public class GUI extends JFrame {
 		scrollPane_pinsB.setBounds(220, 111, 228, 55);
 		contentPane.add(scrollPane_pinsB);
 		
-		table_pinsB = new JTable(model_pinsB){
-			@Override
-			public boolean isCellEditable(int row, int column){
-				return false;
-			}
-		};;
+		table_pinsB = new JTable(model_pinsB);
 		table_pinsB.addMouseListener(new MouseAdapter() {
 			//@Override
 			public void mouseClicked(MouseEvent e){
